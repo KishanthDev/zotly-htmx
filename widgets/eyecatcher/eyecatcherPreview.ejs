@@ -1,0 +1,512 @@
+<div x-data='eyecatcherPreviewController(<%- JSON.stringify(eyecatcherSettings || {}) %>)'
+  class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+  <style>
+    @keyframes wave {
+
+      0%,
+      100% {
+        transform: rotate(0deg);
+      }
+
+      10% {
+        transform: rotate(14deg);
+      }
+
+      20% {
+        transform: rotate(-8deg);
+      }
+
+      30% {
+        transform: rotate(14deg);
+      }
+
+      40% {
+        transform: rotate(-4deg);
+      }
+
+      50% {
+        transform: rotate(10deg);
+      }
+
+      60% {
+        transform: rotate(0deg);
+      }
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .animate-wave {
+      display: inline-block;
+      animation: wave infinite;
+      transform-origin: 70% 70%;
+    }
+
+    .animate-bounce {
+      display: inline-block;
+      animation: bounce infinite;
+    }
+
+    .animate-pulse {
+      display: inline-block;
+      animation: pulse infinite;
+    }
+
+    .animate-rotate {
+      display: inline-block;
+      animation: rotate infinite;
+    }
+  </style>
+
+  <div class="lg:col-span-2 flex flex-col gap-4">
+    <div
+      class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-16 min-h-[300px] relative transition-all duration-300">
+
+      <div class="absolute top-4 right-4 flex space-x-2 z-10">
+        <button @click="copySettings()"
+          :class="copied ? 'bg-emerald-500 text-white' : 'bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900'"
+          class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 cursor-pointer">
+          <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+            stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.4m1.5 13.5h9.75a1.125 1.125 0 0 0 1.125-1.125V7.875a1.125 1.125 0 0 0-1.125-1.125H5.4M9 13.5h5.625M9 16.5h5.625m-5.625-6h1.5m-1.5 3h1.5" />
+          </svg>
+          <svg x-show="copied" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          <span x-text="copied ? 'Copied!' : 'Copy JSON'"></span>
+        </button>
+
+        <button @click="downloadSettings()"
+          class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 shadow-sm transition-all duration-200 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+            stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          <span>Download</span>
+        </button>
+
+        <button @click="saveSettings()"
+          :class="saved ? 'bg-emerald-500 text-white' : 'bg-indigo-600 hover:bg-indigo-500 text-white'"
+          class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 cursor-pointer">
+          <svg x-show="!saved" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+            stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+          </svg>
+          <svg x-show="saved" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          <span x-text="saved ? 'Saved!' : 'Save Widget'"></span>
+        </button>
+      </div>
+
+      <div class="flex cursor-pointer transition-all duration-300 hover:scale-105"
+        :class="`${getFlexDirection()} ${getAlignmentClass()}`" :style="{
+          width: settings.width + 'px',
+          minHeight: settings.height + 'px',
+          background: getCompositeBackground(),
+          borderRadius: `${settings.borderRadius.tl}px ${settings.borderRadius.tr}px ${settings.borderRadius.br}px ${settings.borderRadius.bl}px`,
+          boxShadow: getBoxShadow(),
+          border: getBorderStyle(),
+          padding: `${settings.padding}px`,
+          gap: `${settings.gap}px`,
+        }">
+        <span class="flex-shrink-0" :class="getAnimationClass()"
+          :style="{ fontSize: settings.emojiSize + 'px', animationDuration: settings.animationDuration + 's' }"
+          x-text="settings.emoji"></span>
+        <div class="flex flex-col min-w-0 justify-center flex-1">
+          <h3 class="font-bold leading-tight break-words"
+            :style="{ fontSize: settings.titleSize + 'px', fontWeight: settings.titleWeight, letterSpacing: settings.letterSpacing + 'px', color: settings.titleColor }"
+            x-text="settings.title"></h3>
+          <p class="break-words whitespace-normal"
+            :style="{ fontSize: settings.textSize + 'px', color: settings.textColor }" x-text="settings.text"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-panel p-4 rounded-xl border border-slate-200/60 dark:border-slate-800/40">
+      <span class="text-3xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 block mb-2">CSS
+        Output Code snippet</span>
+      <pre
+        class="bg-slate-950 text-indigo-300 dark:text-indigo-400/90 text-2xs p-3 rounded-lg overflow-x-auto max-h-32 border border-slate-900"><code x-text="`width: ${settings.width}px;
+min-height: ${settings.height}px;
+background: ${getCompositeBackground()};
+border-radius: ${settings.borderRadius.tl}px ${settings.borderRadius.tr}px ${settings.borderRadius.br}px ${settings.borderRadius.bl}px;
+box-shadow: ${getBoxShadow()};
+border: ${getBorderStyle()};
+padding: ${settings.padding}px;
+gap: ${settings.gap}px;`"></code></pre>
+    </div>
+  </div>
+
+  <div
+    class="glass-panel p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/40 flex flex-col h-[550px] z-10">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/60 mb-4">
+      <h3 class="text-sm font-bold font-outfit text-slate-800 dark:text-slate-100">Eyecatcher Tuner</h3>
+      <span
+        class="text-3xs bg-indigo-50 dark:bg-indigo-950/40 text-indigo-500 font-semibold px-2 py-0.5 rounded-full">Reactive
+        editor</span>
+    </div>
+
+    <div
+      class="flex gap-1 bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-900 p-1 rounded-lg text-2xs font-semibold mb-4 overflow-x-auto">
+      <button @click="editorTab = 'layout'"
+        :class="editorTab === 'layout' ? 'bg-white dark:bg-slate-900 shadow-xs text-indigo-500 font-bold' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+        class="flex-1 py-1 px-1.5 rounded transition-all duration-200 cursor-pointer whitespace-nowrap">Layout</button>
+      <button @click="editorTab = 'content'"
+        :class="editorTab === 'content' ? 'bg-white dark:bg-slate-900 shadow-xs text-indigo-500 font-bold' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+        class="flex-1 py-1 px-1.5 rounded transition-all duration-200 cursor-pointer whitespace-nowrap">Content</button>
+      <button @click="editorTab = 'color'"
+        :class="editorTab === 'color' ? 'bg-white dark:bg-slate-900 shadow-xs text-indigo-500 font-bold' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+        class="flex-1 py-1 px-1.5 rounded transition-all duration-200 cursor-pointer whitespace-nowrap">Style</button>
+      <button @click="editorTab = 'effects'"
+        :class="editorTab === 'effects' ? 'bg-white dark:bg-slate-900 shadow-xs text-indigo-500 font-bold' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+        class="flex-1 py-1 px-1.5 rounded transition-all duration-200 cursor-pointer whitespace-nowrap">Effects</button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto pr-1 space-y-4 text-xs">
+      <div x-show="editorTab === 'layout'" class="space-y-4" x-transition>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Width
+              (px)</label><input type="number" x-model.number="settings.width"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold text-center">
+          </div>
+          <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Height
+              (px)</label><input type="number" x-model.number="settings.height"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold text-center">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Padding
+              (px)</label><input type="number" x-model.number="settings.padding"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold text-center">
+          </div>
+          <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Gap
+              (px)</label><input type="number" x-model.number="settings.gap"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold text-center">
+          </div>
+        </div>
+        <div>
+          <label
+            class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold flex justify-between"><span>Border
+              Radius</span><span x-text="settings.borderRadius.tl + 'px'"></span></label>
+          <input type="range" min="0" max="64" x-model.number="settings.borderRadius.tl"
+            @input="settings.borderRadius.tr = settings.borderRadius.bl = settings.borderRadius.br = settings.borderRadius.tl"
+            class="w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Emoji
+              Position</label>
+            <select x-model="settings.emojiPosition"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+              <option value="top">Top</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Alignment</label>
+            <select x-model="settings.contentAlignment"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div x-show="editorTab === 'content'" class="space-y-4" x-transition style="display: none;">
+        <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Title
+            Text</label><input type="text" x-model="settings.title"
+            class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Title Size
+              (px)</label><input type="number" x-model.number="settings.titleSize"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+          </div>
+          <div>
+            <label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Title
+              Weight</label>
+            <select x-model.number="settings.titleWeight"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs">
+              <option value="300">Light (300)</option>
+              <option value="400">Normal (400)</option>
+              <option value="500">Medium (500)</option>
+              <option value="600">Semibold (600)</option>
+              <option value="700">Bold (700)</option>
+              <option value="900">Black (900)</option>
+            </select>
+          </div>
+        </div>
+        <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Description
+            Text</label><textarea x-model="settings.text" rows="2"
+            class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-medium"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Text Size
+              (px)</label><input type="number" x-model.number="settings.textSize"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+          </div>
+          <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Letter Spacing
+              (px)</label><input type="number" x-model.number="settings.letterSpacing"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label
+              class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Emoji</label><input
+              type="text" x-model="settings.emoji"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+          </div>
+          <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Emoji Size
+              (px)</label><input type="number" x-model.number="settings.emojiSize"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+          </div>
+        </div>
+      </div>
+
+      <div x-show="editorTab === 'color'" class="space-y-4" x-transition style="display: none;">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Title
+              Color</label>
+            <div class="flex items-center gap-1"><input type="color" x-model="settings.titleColor"
+                class="w-8 h-7 border-0 bg-transparent cursor-pointer p-0"><input type="text"
+                x-model="settings.titleColor"
+                class="flex-1 px-1.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-mono text-3xs">
+            </div>
+          </div>
+          <div>
+            <label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Text
+              Color</label>
+            <div class="flex items-center gap-1"><input type="color" x-model="settings.textColor"
+                class="w-8 h-7 border-0 bg-transparent cursor-pointer p-0"><input type="text"
+                x-model="settings.textColor"
+                class="flex-1 px-1.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-mono text-3xs">
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Background
+            Color</label>
+          <div class="flex items-center gap-2"><input type="color" x-model="settings.bgColor"
+              class="w-10 h-7 border-0 bg-transparent cursor-pointer p-0"><input type="text" x-model="settings.bgColor"
+              class="flex-1 px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-mono">
+          </div>
+        </div>
+        <div class="border-t border-slate-100 dark:border-slate-850 pt-3 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-3xs uppercase font-extrabold tracking-widest text-slate-400 dark:text-slate-500">Enable
+              Gradient</h4><input type="checkbox" x-model="settings.gradientEnabled"
+              class="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+          </div>
+          <template x-if="settings.gradientEnabled">
+            <div class="space-y-3 border-l-2 border-indigo-500/30 pl-3">
+              <div><select x-model="settings.gradientType"
+                  class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+                  <option value="linear">Linear</option>
+                  <option value="radial">Radial</option>
+                  <option value="conic">Conic</option>
+                </select></div>
+              <div><input type="range" min="0" max="360" x-model.number="settings.gradientAngle"
+                  class="w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div><input type="color" x-model="settings.gradientStops[0].color"
+                    class="w-full h-7 border-0 bg-transparent cursor-pointer p-0"></div>
+                <div><input type="color" x-model="settings.gradientStops[1].color"
+                    class="w-full h-7 border-0 bg-transparent cursor-pointer p-0"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="border-t border-slate-100 dark:border-slate-850 pt-3 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-3xs uppercase font-extrabold tracking-widest text-slate-400 dark:text-slate-500">Enable
+              Border</h4><input type="checkbox" x-model="settings.borderEnabled"
+              class="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+          </div>
+          <template x-if="settings.borderEnabled">
+            <div class="grid grid-cols-2 gap-3 border-l-2 border-indigo-500/30 pl-3">
+              <div><input type="number" x-model.number="settings.borderWidth"
+                  class="w-full px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+              </div>
+              <div><input type="color" x-model="settings.borderColor"
+                  class="w-full h-7 border-0 bg-transparent cursor-pointer p-0"></div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <div x-show="editorTab === 'effects'" class="space-y-4" x-transition style="display: none;">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-3xs uppercase font-extrabold tracking-widest text-slate-400 dark:text-slate-500">Enable
+              Shadow</h4><input type="checkbox" x-model="settings.shadow"
+              class="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+          </div>
+          <template x-if="settings.shadow">
+            <div class="space-y-3 border-l-2 border-indigo-500/30 pl-3">
+              <div class="grid grid-cols-2 gap-3">
+                <div><input type="number" x-model.number="settings.shadowX"
+                    class="w-full px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+                </div>
+                <div><input type="number" x-model.number="settings.shadowY"
+                    class="w-full px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div><input type="number" x-model.number="settings.shadowBlur"
+                    class="w-full px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+                </div>
+                <div><input type="color" x-model="settings.shadowColor"
+                    class="w-full h-7 border-0 bg-transparent cursor-pointer p-0"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="border-t border-slate-100 dark:border-slate-850 pt-3 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-3xs uppercase font-extrabold tracking-widest text-slate-400 dark:text-slate-500">Emoji
+              Animations</h4><input type="checkbox" x-model="settings.animationEnabled"
+              class="rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+          </div>
+          <template x-if="settings.animationEnabled">
+            <div class="grid grid-cols-2 gap-3 border-l-2 border-indigo-500/30 pl-3">
+              <div><select x-model="settings.animationType"
+                  class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs">
+                  <option value="none">None</option>
+                  <option value="wave">Wave</option>
+                  <option value="bounce">Bounce</option>
+                  <option value="pulse">Pulse</option>
+                  <option value="rotate">Rotate</option>
+                </select></div>
+              <div><input type="number" step="0.1" min="0.1" max="10" x-model.number="settings.animationDuration"
+                  class="w-full px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mount explicitly to global window block to avoid execution handler collision
+  window.eyecatcherPreviewController = function (initialSettings) {
+    return {
+      settings: initialSettings,
+      copied: false,
+      saved: false,
+      editorTab: 'layout',
+
+      copySettings() {
+        navigator.clipboard.writeText(JSON.stringify(this.settings, null, 2));
+        this.copied = true;
+        setTimeout(() => this.copied = false, 2000);
+      },
+
+      downloadSettings() {
+        const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.settings, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute('href', dataStr);
+        downloadAnchor.setAttribute('download', 'eyecatcher-settings.json');
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+      },
+
+      saveSettings() {
+        this.saved = true;
+        setTimeout(() => this.saved = false, 2000);
+      },
+
+      getCompositeBackground() {
+        if (!this.settings.gradientEnabled) return this.settings.bgColor;
+        const stops = this.settings.gradientStops.map(s => `${s.color} ${s.pos}%`).join(', ');
+        switch (this.settings.gradientType) {
+          case 'linear': return `linear-gradient(${this.settings.gradientAngle}deg, ${stops})`;
+          case 'radial': return `radial-gradient(circle, ${stops})`;
+          case 'conic': return `conic-gradient(from ${this.settings.gradientAngle}deg, ${stops})`;
+          default: return this.settings.bgColor;
+        }
+      },
+
+      getBoxShadow() {
+        if (!this.settings.shadow) return 'none';
+        return `${this.settings.shadowX}px ${this.settings.shadowY}px ${this.settings.shadowBlur}px ${this.settings.shadowColor}`;
+      },
+
+      getBorderStyle() {
+        if (!this.settings.borderEnabled) return 'none';
+        return `${this.settings.borderWidth}px solid ${this.settings.borderColor}`;
+      },
+
+      getFlexDirection() {
+        if (this.settings.emojiPosition === 'top') return 'flex-col';
+        if (this.settings.emojiPosition === 'right') return 'flex-row-reverse';
+        return 'flex-row';
+      },
+
+      getAlignmentClass() {
+        if (this.settings.contentAlignment === 'center') return 'items-center text-center';
+        if (this.settings.contentAlignment === 'right') return 'items-end text-right';
+        return 'items-start text-left';
+      },
+
+      getAnimationClass() {
+        if (!this.settings.animationEnabled || this.settings.animationType === 'none') return '';
+        return `animate-${this.settings.animationType}`;
+      }
+    };
+  };
+
+  // Safe initialization wrapper block
+  if (window.Alpine) {
+    window.Alpine.data('eyecatcherPreviewController', window.eyecatcherPreviewController);
+  } else {
+    document.addEventListener('alpine:init', () => {
+      window.Alpine.data('eyecatcherPreviewController', window.eyecatcherPreviewController);
+    });
+  }
+</script>

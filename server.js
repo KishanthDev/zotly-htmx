@@ -27,6 +27,15 @@ try {
   console.error('Error loading bubble settings:', err);
 }
 
+// Load Eyecatcher widget settings
+let eyecatcherSettings = {};
+try {
+  const rawSettings = fs.readFileSync(path.join(__dirname, 'widgets', 'eyecatcher', 'settings.json'), 'utf-8');
+  eyecatcherSettings = JSON.parse(rawSettings);
+} catch (err) {
+  console.error('Error loading eyecatcher settings:', err);
+}
+
 // In-memory databases
 let tasks = [
   { id: 1, text: 'Master HTMX out-of-band swaps', completed: true },
@@ -63,9 +72,13 @@ function renderTaskCounterHTML() {
    Routes & HTMX Endpoints
    ========================================================================== */
 
-// 1. Home Page Route - Renders the master index view template
+// 1. Home Page Route - Map eyecatcherSettings to the explicit variable expected by the template
+// 1. Home Page Route - Pass separate config payloads without overlapping properties
 app.get('/', (req, res) => {
-  res.render('index', { bubbleSettings });
+  res.render('index', {
+    bubbleSettings: bubbleSettings,
+    eyecatcherSettings: eyecatcherSettings
+  });
 });
 
 // 2. Live Server Metrics Endpoint (HTMX Polling demo)
@@ -74,10 +87,10 @@ app.get('/api/metrics', (req, res) => {
   const memoryUsage = Math.floor(45 + Math.random() * 15); // 45% to 60%
   const activeUsers = Math.floor(120 + Math.random() * 15 - 7); // ~120 users
 
-  res.render('partials/metricsCards', { 
-    cpu: cpuLoad, 
-    ram: memoryUsage, 
-    users: activeUsers 
+  res.render('partials/metricsCards', {
+    cpu: cpuLoad,
+    ram: memoryUsage,
+    users: activeUsers
   });
 });
 
@@ -87,16 +100,16 @@ app.get('/api/search', (req, res) => {
 
   // If query is empty, return all items
   const filtered = query
-    ? tools.filter(tool => 
-        tool.name.toLowerCase().includes(query) || 
-        tool.description.toLowerCase().includes(query) ||
-        tool.category.toLowerCase().includes(query)
-      )
+    ? tools.filter(tool =>
+      tool.name.toLowerCase().includes(query) ||
+      tool.description.toLowerCase().includes(query) ||
+      tool.category.toLowerCase().includes(query)
+    )
     : tools;
 
-  res.render('partials/searchResults', { 
-    tools: filtered, 
-    query: req.query.q || '' 
+  res.render('partials/searchResults', {
+    tools: filtered,
+    query: req.query.q || ''
   });
 });
 
@@ -152,7 +165,7 @@ app.post('/api/tasks/:id/toggle', (req, res) => {
 
   if (task) {
     task.completed = !task.completed;
-    
+
     // Render the updated task EJS partial and append count OOB update
     res.render('partials/taskItem', { task }, (err, html) => {
       if (err) {
@@ -176,7 +189,7 @@ app.delete('/api/tasks/:id', (req, res) => {
 
   if (index !== -1) {
     tasks.splice(index, 1);
-    
+
     // Return empty body to remove element + counter update OOB
     res.send(`
       ${renderTaskCounterHTML()}
