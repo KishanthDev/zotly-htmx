@@ -1,0 +1,121 @@
+<!-- Backdrop Overlay (Mobile Only) -->
+<div 
+  x-show="$store.sidebar.mobileOpen" 
+  @click="$store.sidebar.mobileOpen = false"
+  class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-40 md:hidden"
+  x-transition:enter="transition-opacity ease-out duration-200"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition-opacity ease-in duration-150"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+  style="display: none;"
+></div>
+
+<!-- Left Sidebar Panel -->
+<aside 
+  :class="[
+    $store.sidebar.expanded ? 'md:w-64' : 'md:w-20',
+    $store.sidebar.mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+  ]"
+  class="fixed md:sticky top-16 left-0 bottom-0 h-[calc(100vh-4rem)] bg-white dark:bg-slate-950 border-r border-slate-100 dark:border-slate-900/60 flex flex-col justify-between p-4 z-40 md:z-20 sidebar-transition w-64 shrink-0 shadow-lg md:shadow-none"
+>
+  <div class="space-y-6">
+    <!-- Quick Label for expanded view -->
+    <div x-show="$store.sidebar.expanded" class="px-2" x-transition:enter="transition-opacity duration-300 delay-100" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+      <span class="text-3xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500">Navigation</span>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="space-y-1">
+      <!-- Dashboard Tab Button -->
+      <button 
+        @click="setTab('dashboard')"
+        :class="[
+          currentTab === 'dashboard' 
+            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent',
+          !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
+        ]"
+        data-tooltip="Live Monitor"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+        </svg>
+        <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Live Monitor</span>
+      </button>
+
+      <!-- Active Search Tab Button -->
+      <button 
+        @click="setTab('search')"
+        :class="[
+          currentTab === 'search' 
+            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent',
+          !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
+        ]"
+        data-tooltip="Active Search"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.637 10.637Z" />
+        </svg>
+        <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Active Search</span>
+      </button>
+
+      <!-- Tasks Tab Button -->
+      <button 
+        @click="setTab('tasks')"
+        :class="[
+          currentTab === 'tasks' 
+            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent',
+          !$store.sidebar.expanded ? 'tooltip md:justify-center' : 'justify-between'
+        ]"
+        data-tooltip="Task Manager"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+      >
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.03 0 1.9.693 2.166 1.638m-7.377 0A48.536 48.536 0 0 1 12 3c1.2 0 2.392.049 3.57.145m-3.57.145a48.954 48.954 0 0 0-4.177.527M3.75 7.68h16.5m-16.5 0a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 3.75 22.5h16.5a2.25 2.25 0 0 0 2.25-2.25V9.93a2.25 2.25 0 0 0-2.25-2.25M3.75 7.68v-.08a2.25 2.25 0 0 1 2.25-2.25h12a2.25 2.25 0 0 1 2.25 2.25v.08" />
+          </svg>
+          <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Tasks</span>
+        </div>
+        <span id="task-counter" class="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-xs font-semibold px-2 py-0.5 rounded-full shrink-0">
+          --
+        </span>
+      </button>
+
+      <!-- Bubble Widget Tab Button -->
+      <button 
+        @click="setTab('bubble')"
+        :class="[
+          currentTab === 'bubble' 
+            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent',
+          !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
+        ]"
+        data-tooltip="Bubble Tuner"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.904-4.813L21 9l-3-3L9.813 15.904Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 9.5 17.5 12" />
+        </svg>
+        <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Bubble Tuner</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Sidebar footer content -->
+  <div class="space-y-4">
+    <div class="text-3xs text-slate-400 dark:text-slate-500 font-medium px-2 py-3 border-t border-slate-100 dark:border-slate-900 flex flex-col gap-1.5">
+      <div class="flex items-center gap-1.5 text-emerald-500">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span x-show="$store.sidebar.expanded">SYS ONLINE</span>
+      </div>
+      <div x-show="$store.sidebar.expanded" class="truncate">Port: 4000</div>
+    </div>
+  </div>
+</aside>

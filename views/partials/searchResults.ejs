@@ -1,0 +1,19 @@
+<% if (tools.length === 0) { %>
+  <div class="col-span-full py-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-slate-400 mx-auto mb-3">
+      <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.637 10.637Z" />
+    </svg>
+    <p class="text-slate-700 dark:text-slate-300 font-medium">No results found for "<%= query %>"</p>
+    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Try another search phrase, or clear the search input</p>
+  </div>
+<% } else { %>
+  <% tools.forEach(function(tool) { %>
+    <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 shadow-xs hover:shadow-md dark:shadow-lg dark:hover:shadow-indigo-950/10 hover:border-indigo-500/20 dark:hover:border-indigo-400/20 transition-all duration-300 group">
+      <div class="flex items-center justify-between mb-2">
+        <h4 class="text-base font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200"><%= tool.name %></h4>
+        <span class="px-2 py-0.5 rounded text-2xs font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"><%= tool.category %></span>
+      </div>
+      <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed"><%= tool.description %></p>
+    </div>
+  <% }); %>
+<% } %>

@@ -1,0 +1,24 @@
+{
+  "name": "zotly-htmx-alpine-demo",
+  "version": "1.0.0",
+  "description": "A demo dashboard showcasing HTMX + Alpine.js + Tailwind CSS v4",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "ejs": "^6.0.1",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0"
+  },
+  "keywords": [
+    "htmx",
+    "alpinejs",
+    "tailwind",
+    "express",
+    "demo"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}

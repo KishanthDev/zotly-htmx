@@ -1,0 +1,70 @@
+<header class="h-16 sticky top-0 bg-white/80 dark:bg-slate-950/80 border-b border-slate-100 dark:border-slate-900/60 backdrop-blur-md z-30 flex items-center justify-between px-4 md:px-6">
+  <div class="flex items-center gap-3">
+    <!-- Mobile Menu Trigger -->
+    <button 
+      @click="$store.sidebar.toggleMobile()"
+      class="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900 focus:outline-none"
+      aria-label="Open sidebar menu"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+    </button>
+
+    <!-- Brand Logo -->
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="font-outfit font-extrabold text-base leading-none bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">Zotly Stack</h1>
+      </div>
+    </div>
+
+    <!-- Sidebar Collapse Toggle Button (Desktop Only) -->
+    <button 
+      @click="$store.sidebar.toggle()"
+      class="hidden md:flex p-1.5 ml-4 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-200/50 dark:border-slate-800/40 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-all duration-200"
+      aria-label="Toggle sidebar collapse"
+    >
+      <!-- Left/Right collapse arrow based on expanded state -->
+      <svg x-show="$store.sidebar.expanded" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+      </svg>
+      <svg x-show="!$store.sidebar.expanded" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4" style="display: none;">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Right Navbar Controls -->
+  <div class="flex items-center gap-3 md:gap-5">
+    
+    <!-- Connection Status Indicator -->
+    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800/60 text-3xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+      <span class="relative flex h-1.5 w-1.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span>
+      </span>
+      <span>HTMX v2</span>
+    </div>
+
+    <!-- Theme Toggle Switch -->
+    <button 
+      @click="$store.theme.toggle()" 
+      class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-200/50 dark:border-slate-800/40 cursor-pointer transition-all duration-200"
+      aria-label="Toggle interface color scheme"
+    >
+      <!-- Sun icon for light mode -->
+      <svg x-show="!$store.theme.dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-amber-500">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21M5.197 5.197l1.591 1.591m10.424 10.424 1.591 1.591M3 12h2.25m13.5 0H21M5.197 18.803l1.591-1.591M10.05 9.605l3.9-3.9M13.95 14.395l-3.9-3.9M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z" />
+      </svg>
+      <!-- Moon icon for dark mode -->
+      <svg x-show="$store.theme.dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400" style="display: none;">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+      </svg>
+    </button>
+  </div>
+</header>
