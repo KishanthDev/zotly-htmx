@@ -1,6 +1,6 @@
 <!-- Store Settings Safely to avoid EJS quote conflicts -->
 <script id="chatwidget-settings-data" type="application/json">
-  <%- JSON.stringify(typeof chatwidgetSettings !== 'undefined' ? chatwidgetSettings : {}) %>
+  <%- JSON.stringify(typeof chatcontactSettings !== 'undefined' ? chatcontactSettings : (typeof chatwidgetSettings !== 'undefined' ? chatwidgetSettings : {})) %>
 </script>
 
 <!-- Dynamic Custom Scrollbar for Chat Area -->
@@ -612,6 +612,12 @@ box-shadow: ${settings.widgetShadow ? `0 0 ${settings.widgetShadowBlur}px ${sett
       ...initialSettings
     };
 
+    if (window.Alpine) {
+      if (!Alpine.store('chatcontact') || !Alpine.store('chatcontact').chatTitle) {
+        Alpine.store('chatcontact', defaultSettings);
+      }
+    }
+
     const initialMessages = [
       { text: 'Hi! How can I help you today?', isUser: false, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
       { text: 'I need help with my order', isUser: true, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
@@ -619,7 +625,7 @@ box-shadow: ${settings.widgetShadow ? `0 0 ${settings.widgetShadowBlur}px ${sett
     ];
 
     return {
-      settings: defaultSettings,
+      settings: window.Alpine ? Alpine.store('chatcontact') : defaultSettings,
       copied: false,
       saved: false,
       editorTab: 'layout',
