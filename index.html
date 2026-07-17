@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zotly Dashboard - HTMX & Alpine.js Showcase</title>
+  
+  <!-- Tailwind CSS v4 Browser Compiler CDN -->
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  
+  <!-- HTMX v2 CDN -->
+  <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+  
+  <!-- Alpine.js v3 CDN (defer is recommended) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom Styles (HTMX indicators, fonts, fine-tuning) -->
+  <link rel="stylesheet" href="public/style.css">
+  
+  <!-- Tailwind v4 Custom Theme & Utilities via browser compiler -->
+  <style type="text/tailwindcss">
+    @import "tailwindcss";
+    @custom-variant dark (&:where(.dark, .dark *));
+
+    @theme {
+      --font-inter: 'Inter', sans-serif;
+      --font-outfit: 'Outfit', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="antialiased">
+
+  <div x-data="dashboardController"
+    class="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 font-inter flex flex-col relative">
+    <!-- Background Glows -->
+    <div class="accent-glow top-[100px] left-[50px]"></div>
+    <div class="accent-glow-emerald bottom-[150px] right-[50px]"></div>
+
+    <!-- 1. TOP NAVBAR -->
+    <header class="h-16 sticky top-0 bg-white/80 dark:bg-slate-950/80 border-b border-slate-100 dark:border-slate-900/60 backdrop-blur-md z-30 flex items-center justify-between px-4 md:px-6">
+      <div class="flex items-center gap-3">
+        <!-- Mobile Menu Trigger -->
+        <button 
+          @click="$store.sidebar.toggleMobile()"
+          class="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900 focus:outline-none"
+          aria-label="Open sidebar menu"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+
+        <!-- Brand Logo -->
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-outfit font-extrabold text-base leading-none bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">Zotly Stack</h1>
+          </div>
+        </div>
+
+        <!-- Sidebar Collapse Toggle Button (Desktop Only) -->
+        <button 
+          @click="$store.sidebar.toggle()"
+          class="hidden md:flex p-1.5 ml-4 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-200/50 dark:border-slate-800/40 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-all duration-200"
+          aria-label="Toggle sidebar collapse"
+        >
+          <svg x-show="$store.sidebar.expanded" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+          <svg x-show="!$store.sidebar.expanded" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4" style="display: none;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Right Navbar Controls -->
+      <div class="flex items-center gap-3 md:gap-5">
+        <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800/60 text-3xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+          <span class="relative flex h-1.5 w-1.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span>
+          </span>
+          <span>Static Showcase</span>
+        </div>
+
+        <!-- Theme Toggle Switch -->
+        <button 
+          @click="$store.theme.toggle()" 
+          class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-200/50 dark:border-slate-800/40 cursor-pointer transition-all duration-200"
+          aria-label="Toggle interface color scheme"
+        >
+          <svg x-show="!$store.theme.dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-amber-500">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21M5.197 5.197l1.591 1.591m10.424 10.424 1.591 1.591M3 12h2.25m13.5 0H21M5.197 18.803l1.591-1.591M10.05 9.605l3.9-3.9M13.95 14.395l-3.9-3.9M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z" />
+          </svg>
+          <svg x-show="$store.theme.dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400" style="display: none;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Flex Shell -->
+    <div class="flex flex-1 relative min-h-0">
+
+      <!-- Sidebar Mobile Backdrop -->
+      <div 
+        x-show="$store.sidebar.mobileOpen" 
+        @click="$store.sidebar.mobileOpen = false"
+        class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-40 md:hidden"
+        x-transition:enter="transition-opacity ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        style="display: none;"
+      ></div>
+
+      <!-- Left Sidebar Navigation -->
+      <aside 
+        :class="[
+          $store.sidebar.expanded ? 'md:w-64' : 'md:w-20',
+          $store.sidebar.mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        ]"
+        class="fixed md:sticky top-16 left-0 bottom-0 h-[calc(100vh-4rem)] bg-white dark:bg-slate-950 border-r border-slate-100 dark:border-slate-900/60 flex flex-col justify-between p-4 z-40 md:z-20 sidebar-transition w-64 shrink-0 shadow-lg md:shadow-none"
+      >
+        <div class="space-y-6">
+          <div x-show="$store.sidebar.expanded" class="px-2" x-transition:enter="transition-opacity duration-300 delay-100" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+            <span class="text-3xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500">Navigation</span>
+          </div>
+
+          <nav class="space-y-1">
+            <!-- Preview Tab Button -->
+            <button 
+              @click="setTab('preview')"
+              :class="[
+                currentTab === 'preview' 
+                  ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent border-none',
+                !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
+              ]"
+              data-tooltip="Live Preview"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+              <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Live Preview</span>
+            </button>
+
+            <!-- Bubble Widget Tab Button -->
+            <button 
+              @click="setTab('bubble')"
+              :class="[
+                currentTab === 'bubble' 
+                  ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent border-none',
+                !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
+              ]"
+              data-tooltip="Bubble Widget"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.904-4.813L21 9l-3-3L9.813 15.904Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 9.5 17.5 12" />
+              </svg>
+              <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Bubble Widget</span>
+            </button>
+
+            <!-- Eyecatcher Widget Tab Button -->
+            <button 
+              @click="setTab('eyecatcher')"
+              :class="[
+                currentTab === 'eyecatcher' 
+                  ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent border-none',
+                !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
+              ]"
+              data-tooltip="Eyecatcher Widget"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+              <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Eyecatcher Widget</span>
+            </button>
+
+            <!-- ChatBar Widget Tab Button -->
+            <button 
+              @click="setTab('chatbar')"
+              :class="[
+                currentTab === 'chatbar' 
+                  ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent border-none',
+                !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
+              ]"
+              data-tooltip="ChatBar Widget"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+              </svg>
+              <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">ChatBar Widget</span>
+            </button>
+
+            <!-- Chat Contact Widget Tab Button -->
+            <button 
+              @click="setTab('chatcontact')"
+              :class="[
+                currentTab === 'chatcontact' 
+                  ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent border-none',
+                !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
+              ]"
+              data-tooltip="Chat Contact Widget"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+              </svg>
+              <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Chat Contact Widget</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="space-y-4">
+          <div class="text-3xs text-slate-400 dark:text-slate-500 font-medium px-2 py-3 border-t border-slate-100 dark:border-slate-900 flex flex-col gap-1.5">
+            <div class="flex items-center gap-1.5 text-emerald-500">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span x-show="$store.sidebar.expanded">SYS ONLINE</span>
+            </div>
+            <div x-show="$store.sidebar.expanded" class="truncate">Deploy: Vercel (Static)</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- 3. MAIN CONTENT CONTAINER -->
+      <main class="flex-1 p-4 md:p-8 overflow-y-auto w-full z-10">
+        <div class="max-w-5xl mx-auto w-full space-y-6">
+
+          <!-- View Title Header -->
+          <div class="pb-4 border-b border-slate-100 dark:border-slate-900/60 mb-6">
+            <span class="text-3xs uppercase tracking-widest font-extrabold text-indigo-500 font-outfit">Demonstration Panel</span>
+            <h2 x-show="currentTab === 'preview'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1">Live Website Preview</h2>
+            <h2 x-show="currentTab === 'bubble'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1" style="display: none;">Bubble Widget View</h2>
+            <h2 x-show="currentTab === 'eyecatcher'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1" style="display: none;">Eyecatcher Widget View</h2>
+            <h2 x-show="currentTab === 'chatbar'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1" style="display: none;">Chatbar Widget View</h2>
+            <h2 x-show="currentTab === 'chatcontact'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1" style="display: none;">Chat Contact Widget View</h2>
+          </div>
+
+          <!-- Views -->
+
+          <!-- 1. LIVE PREVIEW TAB VIEW -->
+          <div x-show="currentTab === 'preview'" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-3"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-data="{ openContactWidget: false, mode: 'chat', chatText: '', submitted: false }"
+            @toggle-contact-widget.stop="openContactWidget = !openContactWidget"
+            @close-contact-widget.stop="openContactWidget = false"
+            class="relative w-full h-[620px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
+            style="display: none;"
+          >
+            <!-- Top Navbar -->
+            <div class="h-14 border-b border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-950 px-6 flex items-center justify-between z-10 shrink-0">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-red-400"></span>
+                <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                <span class="w-3 h-3 rounded-full bg-green-400"></span>
+                <div class="ml-4 px-3 py-1 bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 rounded-lg text-3xs font-mono select-none w-56">https://yoursite.com/preview</div>
+              </div>
+              <div class="flex items-center gap-2 text-slate-400 dark:text-slate-500 text-3xs font-bold uppercase tracking-wider">
+                <span>Mock Viewport</span>
+              </div>
+            </div>
+
+            <!-- Webpage Body Content -->
+            <div class="flex-1 overflow-y-auto p-8 relative flex flex-col justify-center items-center text-center font-outfit select-none">
+              <div class="space-y-4 max-w-lg z-10">
+                <span class="text-3xs uppercase tracking-widest font-extrabold text-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 px-2.5 py-1 rounded-full">Interactive Demo Sandbox</span>
+                <h3 class="text-3xl font-black text-slate-800 dark:text-slate-100">Click the Bubble to Open the Chat</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-inter leading-relaxed">
+                  On the bottom right side of this preview viewport, you can see the floating live <strong>Bubble Widget</strong> styled directly from settings.json. Click on it to open the <strong>Chat Contact Widget popup</strong> in real time!
+                </p>
+              </div>
+              
+              <!-- Dynamic Visual Gradients decoration -->
+              <div class="absolute inset-0 bg-radial-gradient from-indigo-500/5 via-transparent to-transparent pointer-events-none"></div>
+            </div>
+
+            <!-- Live Chat Contact Widget Popup inside the Mock Viewport -->
+            <div x-show="openContactWidget" 
+              x-data="window.chatwidgetPreviewController()"
+              x-transition:enter="transition ease-out duration-250"
+              x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+              x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+              x-transition:leave="transition ease-in duration-150"
+              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+              x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+              class="absolute bottom-20 right-6 z-25 flex flex-col overflow-hidden bg-white dark:bg-neutral-800 transition-all duration-200 shadow-2xl border"
+              :style="{
+                width: settings.widgetWidth + 'px',
+                height: settings.widgetHeight + 'px',
+                maxHeight: 'calc(100% - 100px)',
+                boxShadow: settings.widgetShadow ? `0 0 ${settings.widgetShadowBlur}px ${settings.widgetShadowColor}` : 'none',
+                border: settings.widgetBorderEnabled ? `${settings.widgetBorderWidth}px solid ${settings.widgetBorderColor}` : 'none',
+                borderRadius: `${settings.widgetBorderRadius}px`
+              }"
+              style="display: none;"
+            >
+              <!-- Header -->
+              <header class="flex justify-between items-center px-4 border-b flex-shrink-0" :style="{
+                  height: settings.headerHeight + 'px',
+                  backgroundColor: settings.headerBgColor,
+                  color: settings.headerTextColor,
+                  borderColor: 'rgba(0,0,0,0.1)'
+                }">
+                <div class="flex items-center gap-2">
+                  <img :src="settings.logoUrl || 'https://via.placeholder.com/32'" alt="Logo"
+                    class="w-8 h-8 rounded-full object-cover bg-white" />
+                  <span class="text-sm font-semibold" x-text="settings.chatTitle"></span>
+                </div>
+                <nav class="flex gap-1.5 items-center">
+                  <template x-if="settings.showBackButton">
+                    <button class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="chevron-left"
+                        class="w-5 h-5"></i></button>
+                  </template>
+                  <template x-if="settings.showMenuButton">
+                    <div class="relative">
+                      <button @click="showDropdown = !showDropdown" @click.outside="showDropdown = false"
+                        class="p-1 hover:opacity-70 cursor-pointer">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                      </button>
+                      <div x-show="showDropdown" style="display: none;"
+                        class="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-slate-800 rounded-md shadow-xl border border-slate-100 dark:border-slate-700 z-20 text-sm overflow-hidden text-slate-800 dark:text-slate-200">
+                        <button
+                          class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors">Send
+                          transcript</button>
+                        <button @click="showContactForm = !showContactForm; showDropdown = false"
+                          class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors"
+                          x-text="showContactForm ? 'Back to Chat' : 'Contact Form'"></button>
+                      </div>
+                    </div>
+                  </template>
+                  <button @click="$dispatch('close-contact-widget')" class="p-1 hover:opacity-70 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                  </button>
+                </nav>
+              </header>
+
+              <!-- Main Chat/Form Body -->
+              <div class="flex-1 overflow-y-auto p-4 chat-scroll relative" :style="{ background: getBackgroundStyle() }">
+                <!-- Chat View -->
+                <div x-show="!showContactForm" class="flex flex-col justify-end min-h-full">
+                  <template x-for="(msg, index) in messages" :key="index">
+                    <div class="flex mb-3" :class="msg.isUser ? 'justify-end' : 'justify-start'"
+                      x-transition:enter="transition ease-out duration-300"
+                      x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                      x-transition:enter-end="opacity-100 translate-y-0 scale-100">
+                      <div class="max-w-[85%] break-words" :class="msg.isUser ? 'rounded-br-none' : 'rounded-bl-none'" :style="{
+                          backgroundColor: msg.isUser ? settings.userMsgBgColor : settings.botMsgBgColor,
+                          color: msg.isUser ? settings.userMsgTextColor : settings.botMsgTextColor,
+                          fontSize: settings.msgFontSize + 'px',
+                          borderRadius: settings.msgBorderRadius + 'px',
+                          padding: settings.msgPadding + 'px'
+                        }">
+                        <span x-text="msg.text"></span>
+                        <template x-if="settings.showTimestamp">
+                          <div class="text-[10px] opacity-60 mt-1" x-text="msg.time"></div>
+                        </template>
+                      </div>
+                    </div>
+                  </template>
+
+                  <!-- Typing Indicator -->
+                  <template x-if="isTyping && settings.showTypingIndicator">
+                    <div class="flex justify-start mb-2" x-transition:enter="transition ease-out duration-200"
+                      x-transition:enter-start="opacity-0">
+                      <div class="flex items-center gap-1.5 px-3 py-2"
+                        :style="{ backgroundColor: settings.typingIndicatorBgColor, borderRadius: settings.msgBorderRadius + 'px' }">
+                        <span class="w-1.5 h-1.5 rounded-full animate-bounce"
+                          :style="{ backgroundColor: settings.typingIndicatorColor, animationDelay: '0ms' }"></span>
+                        <span class="w-1.5 h-1.5 rounded-full animate-bounce"
+                          :style="{ backgroundColor: settings.typingIndicatorColor, animationDelay: '150ms' }"></span>
+                        <span class="w-1.5 h-1.5 rounded-full animate-bounce"
+                          :style="{ backgroundColor: settings.typingIndicatorColor, animationDelay: '300ms' }"></span>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+
+                <!-- Contact Form View -->
+                <div x-show="showContactForm" style="display: none;" x-transition:enter="transition ease-out duration-300"
+                  x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                  <div class="p-3 bg-white dark:bg-neutral-800"
+                    :style="{ backgroundColor: settings.formBgColor, borderRadius: settings.formBorderRadius + 'px', border: `1px solid ${settings.formBorderColor}` }">
+
+                    <div x-show="!isFormSubmitted" class="text-center mb-4">
+                      <p class="text-sm font-bold pb-1" :style="{ color: settings.formTitleColor }"
+                        x-text="settings.formMessage1"></p>
+                      <p class="text-xs" :style="{ color: settings.formMessageColor }" x-text="settings.formMessage2"></p>
+                    </div>
+
+                    <h3 x-show="!isFormSubmitted" class="text-xs font-bold mb-3" :style="{ color: settings.formTitleColor }"
+                      x-text="settings.formTitle"></h3>
+
+                    <form @submit.prevent="submitForm" class="space-y-3 relative">
+                      <div x-show="!isFormSubmitted">
+                        <label class="block text-[10px] font-bold mb-1"
+                          :style="{ color: settings.formLabelColor }">Name:</label>
+                        <input type="text" x-model="formData.name" placeholder="Your Name"
+                          class="w-full px-2 py-1 text-xs outline-none bg-transparent"
+                          :style="{ border: `1px solid ${settings.formInputBorderColor}`, borderRadius: settings.formInputBorderRadius + 'px', color: settings.formLabelColor }">
+                        <p x-show="formErrors.name" class="text-rose-500 text-[10px] mt-1 font-bold" x-text="formErrors.name"></p>
+                      </div>
+                      <div x-show="!isFormSubmitted">
+                        <label class="block text-[10px] font-bold mb-1"
+                          :style="{ color: settings.formLabelColor }">Email:</label>
+                        <input type="email" x-model="formData.email" placeholder="Your Email"
+                          class="w-full px-2 py-1 text-xs outline-none bg-transparent"
+                          :style="{ border: `1px solid ${settings.formInputBorderColor}`, borderRadius: settings.formInputBorderRadius + 'px', color: settings.formLabelColor }">
+                        <p x-show="formErrors.email" class="text-rose-500 text-[10px] mt-1 font-bold" x-text="formErrors.email"></p>
+                      </div>
+                      <div x-show="!isFormSubmitted">
+                        <label class="block text-[10px] font-bold mb-1"
+                          :style="{ color: settings.formLabelColor }">Message:</label>
+                        <textarea x-model="formData.message" rows="2" placeholder="Your Message"
+                          class="w-full px-2 py-1 text-xs outline-none resize-none bg-transparent"
+                          :style="{ border: `1px solid ${settings.formInputBorderColor}`, borderRadius: settings.formInputBorderRadius + 'px', color: settings.formLabelColor }"></textarea>
+                        <p x-show="formErrors.message" class="text-rose-500 text-[10px] mt-1 font-bold" x-text="formErrors.message"></p>
+                      </div>
+
+                      <div class="mt-4 flex flex-col items-center justify-center relative h-8">
+                        <button type="submit"
+                          class="w-full text-xs font-bold flex items-center justify-center transition-all duration-500 overflow-hidden cursor-pointer"
+                          :class="isFormSubmitted ? 'pointer-events-none' : ''" :style="{
+                            backgroundColor: settings.submitBtnBgColor,
+                            color: settings.submitBtnFontColor,
+                            borderRadius: isFormSubmitted ? '50px' : settings.submitBtnBorderRadius + 'px',
+                            height: '32px',
+                            width: isFormSubmitted ? '32px' : '100%',
+                          }">
+                          <span x-show="!isFormSubmitted" x-text="settings.submitBtnText"></span>
+                          <i x-show="isFormSubmitted" data-lucide="check" class="w-4 h-4" style="display: none;"></i>
+                        </button>
+                      </div>
+                      <div x-show="isFormSubmitted" style="display: none;" class="text-center mt-2"
+                        x-transition:enter="transition delay-300 duration-300">
+                        <p class="text-xs font-bold" :style="{ color: settings.submitBtnBgColor }"
+                          x-text="settings.submitBtnSubmittedText"></p>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Input Area (Hidden during contact form) -->
+              <div x-show="!showContactForm" class="p-2 border-t flex-shrink-0"
+                :style="{ backgroundColor: settings.headerBgColor, borderColor: 'rgba(0,0,0,0.1)' }">
+                <div class="flex items-center relative">
+                  <input type="text" x-model="newMessage" @keydown.enter="sendMessage"
+                    :placeholder="settings.inputPlaceholder" class="flex-1 outline-none w-full pr-[80px] bg-transparent" :style="{
+                      color: settings.inputTextColor,
+                      borderRadius: settings.inputBorderRadius + 'px',
+                      height: '36px',
+                      fontSize: '12px',
+                      paddingLeft: '10px',
+                      border: `1px solid ${settings.inputBorderColor}`
+                    }" />
+                  <div class="absolute right-1.5 flex gap-1 items-center">
+                    <template x-if="settings.showEmojiPicker">
+                      <div class="relative">
+                        <button @click="showEmojiPicker = !showEmojiPicker" @click.outside="showEmojiPicker = false"
+                          class="p-1 hover:opacity-70 cursor-pointer" :style="{ color: settings.emojiButtonColor }">
+                          <i data-lucide="smile" class="w-4 h-4"></i>
+                        </button>
+                        <div x-show="showEmojiPicker" style="display: none;"
+                          class="absolute bottom-full right-0 mb-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 p-2 grid grid-cols-5 gap-1 z-20">
+                          <template x-for="emoji in emojis">
+                            <button @click="newMessage += emoji; showEmojiPicker = false"
+                              class="text-sm hover:bg-slate-100 dark:hover:bg-slate-700 rounded p-0.5 cursor-pointer"
+                              x-text="emoji"></button>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                    <template x-if="settings.showAttachButton">
+                      <button class="p-1 hover:opacity-70 cursor-pointer" :style="{ color: settings.attachButtonColor }">
+                        <i data-lucide="paperclip" class="w-4 h-4"></i>
+                      </button>
+                    </template>
+                    <button @click="sendMessage"
+                      class="ml-1 rounded flex items-center justify-center transition-colors cursor-pointer"
+                      :disabled="!newMessage.trim()" :style="{
+                        backgroundColor: newMessage.trim() ? settings.sendBtnBgColor : '#d1d5db',
+                        color: settings.sendBtnIconColor,
+                        borderRadius: settings.sendBtnBorderRadius + 'px',
+                        width: '28px',
+                        height: '28px',
+                        cursor: newMessage.trim() ? 'pointer' : 'not-allowed'
+                      }">
+                      <i data-lucide="send" class="w-3.5 h-3.5 ml-0.5"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer -->
+              <footer x-show="settings.showFooter" class="flex items-center justify-center border-t flex-shrink-0" :style="{
+                  height: settings.footerHeight + 'px',
+                  backgroundColor: settings.footerBgColor,
+                  color: settings.footerTextColor,
+                  fontSize: '10px',
+                  borderColor: 'rgba(0,0,0,0.1)'
+                }">
+                <span x-text="settings.footerText"></span>
+              </footer>
+            </div>
+
+            <!-- Floating bubble widget replica -->
+            <div 
+              x-show="!openContactWidget"
+              x-data='window.previewBubbleController(Alpine.store("bubble"))'
+              @click="$dispatch('toggle-contact-widget')"
+              class="absolute bottom-6 right-6 z-25 flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg select-none"
+              :style="{
+                width: settings.width + 'px',
+                height: settings.height + 'px',
+                borderRadius: `${settings.borderRadius.tl}px ${settings.borderRadius.tr}px ${settings.borderRadius.br}px ${settings.borderRadius.bl}px`,
+                background: getCompositeBackground(),
+                backgroundBlendMode: settings.backgroundBlendMode,
+                boxShadow: [getBoxShadow(), getInnerShadow()].filter(Boolean).join(', '),
+                transformStyle: 'preserve-3d',
+                ...getBorderStyle(),
+                ...(settings.glass && settings.glass.enabled ? getGlassStyle() : {}),
+                ...(settings.neon && settings.neon.enabled ? getNeonStyle() : {}),
+                ...getEntryAnimStyle()
+              }" 
+              @mouseenter="hovered = true" 
+              @mouseleave="hovered = false"
+            >
+              <template x-if="settings.backgroundOverlayType === 'image' && settings.backgroundImageUrl">
+                <div class="absolute inset-0 pointer-events-none" :style="{
+                    backgroundImage: `url(${settings.backgroundImageUrl})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: settings.backgroundImageSize,
+                    opacity: settings.backgroundImageOpacity,
+                    mixBlendMode: settings.backgroundBlendMode,
+                    borderRadius: 'inherit'
+                  }"></div>
+              </template>
+
+              <template x-if="settings.backgroundOverlayType === 'lucide' && settings.backgroundLucideIcon">
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center" :style="{ opacity: settings.backgroundLucideOpacity, mixBlendMode: settings.backgroundBlendMode }">
+                  <i :data-lucide="settings.backgroundLucideIcon.toLowerCase()" :style="{ width: settings.backgroundLucideSize + 'px', height: settings.backgroundLucideSize + 'px', color: settings.backgroundLucideColor }"></i>
+                </div>
+              </template>
+
+              <template x-if="settings.dots && hovered">
+                <div class="absolute flex z-10" :style="{ gap: `${settings.dots.spacing}px` }">
+                  <template x-for="i in [0, 1, 2]">
+                    <span class="rounded-full" :style="{ width: `${settings.dots.size}px`, height: `${settings.dots.size}px`, backgroundColor: settings.dots.color, animation: settings.dots.animation === 'bounce' ? `dotBounce 1.2s cubic-bezier(.2,.8,.2,1) ${i * 0.12}s infinite` : settings.dots.animation === 'pulse' ? `dotPulse 1.4s cubic-bezier(.2,.8,.2,1) ${i * 0.1}s infinite` : 'none' }"></span>
+                  </template>
+                </div>
+              </template>
+
+              <template x-if="settings.outlineRing && settings.outlineRing.enabled">
+                <div aria-hidden class="pointer-events-none absolute inset-0" :style="{ borderRadius: 'inherit', boxShadow: `0 0 0 ${settings.outlineRing.width}px ${hexToRgba(settings.outlineRing.color, settings.outlineRing.opacity)}` }"></div>
+              </template>
+            </div>
+          </div>
+
+          <!-- 2. BUBBLE VIEW -->
+          <div x-show="currentTab === 'bubble'" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-3"
+            x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+            
+            <div x-data="bubblePreviewController(Alpine.store('bubble'))" class="flex flex-col items-center justify-center gap-6 max-w-2xl mx-auto">
+              <style x-text="cssKeyframes()"></style>
+
+              <div class="w-full flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-24 min-h-[400px] relative transition-all duration-300 shadow-xs">
+                <div class="relative flex items-center justify-center transition-all duration-300 cursor-pointer" :style="{
+                    width: settings.width + 'px',
+                    height: settings.height + 'px',
+                    borderRadius: `${settings.borderRadius.tl}px ${settings.borderRadius.tr}px ${settings.borderRadius.br}px ${settings.borderRadius.bl}px`,
+                    background: getCompositeBackground(),
+                    backgroundBlendMode: settings.backgroundBlendMode,
+                    boxShadow: [getBoxShadow(), getInnerShadow()].filter(Boolean).join(', '),
+                    transformStyle: 'preserve-3d',
+                    ...getBorderStyle(),
+                    ...(settings.glass && settings.glass.enabled ? getGlassStyle() : {}),
+                    ...(settings.neon && settings.neon.enabled ? getNeonStyle() : {}),
+                    ...getEntryAnimStyle()
+                  }" @mouseenter="hovered = true" @mouseleave="hovered = false">
+                  <template x-if="settings.backgroundOverlayType === 'image' && settings.backgroundImageUrl">
+                    <div class="absolute inset-0 pointer-events-none" :style="{
+                        backgroundImage: `url(${settings.backgroundImageUrl})`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center',
+                        backgroundSize: settings.backgroundImageSize,
+                        opacity: settings.backgroundImageOpacity,
+                        mixBlendMode: settings.backgroundBlendMode,
+                        borderRadius: 'inherit'
+                      }"></div>
+                  </template>
+                  <template x-if="settings.backgroundOverlayType === 'lucide' && settings.backgroundLucideIcon">
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center" :style="{ opacity: settings.backgroundLucideOpacity, mixBlendMode: settings.backgroundBlendMode }">
+                      <i :data-lucide="settings.backgroundLucideIcon.toLowerCase()" :style="{ width: settings.backgroundLucideSize + 'px', height: settings.backgroundLucideSize + 'px', color: settings.backgroundLucideColor }"></i>
+                    </div>
+                  </template>
+                  <template x-if="settings.dots && hovered">
+                    <div class="absolute flex z-10" :style="{ gap: `${settings.dots.spacing}px` }">
+                      <template x-for="i in [0, 1, 2]">
+                        <span class="rounded-full" :style="{ width: `${settings.dots.size}px`, height: `${settings.dots.size}px`, backgroundColor: settings.dots.color, animation: settings.dots.animation === 'bounce' ? `dotBounce 1.2s cubic-bezier(.2,.8,.2,1) ${i * 0.12}s infinite` : settings.dots.animation === 'pulse' ? `dotPulse 1.4s cubic-bezier(.2,.8,.2,1) ${i * 0.1}s infinite` : 'none' }"></span>
+                      </template>
+                    </div>
+                  </template>
+                  <template x-if="settings.outlineRing && settings.outlineRing.enabled">
+                    <div aria-hidden class="pointer-events-none absolute inset-0" :style="{ borderRadius: 'inherit', boxShadow: `0 0 0 ${settings.outlineRing.width}px ${hexToRgba(settings.outlineRing.color, settings.outlineRing.opacity)}` }"></div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. EYECATCHER VIEW -->
+          <div x-show="currentTab === 'eyecatcher'" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-3"
+            x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+            
+            <div x-data="eyecatcherPreviewController(Alpine.store('eyecatcher'))" class="flex flex-col items-center justify-center gap-6 max-w-2xl mx-auto">
+              <style>
+                @keyframes wave { 0%, 100% { transform: rotate(0deg); } 10% { transform: rotate(14deg); } 20% { transform: rotate(-8deg); } 30% { transform: rotate(14deg); } 40% { transform: rotate(-4deg); } 50% { transform: rotate(10deg); } 60% { transform: rotate(0deg); } }
+                @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+                @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+                @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                .animate-wave { display: inline-block; animation: wave infinite; transform-origin: 70% 70%; }
+                .animate-bounce { display: inline-block; animation: bounce infinite; }
+                .animate-pulse { display: inline-block; animation: pulse infinite; }
+                .animate-rotate { display: inline-block; animation: rotate infinite; }
+              </style>
+
+              <div class="w-full flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-24 min-h-[400px] relative transition-all duration-300 shadow-xs">
+                <div class="flex cursor-pointer transition-all duration-300 hover:scale-105"
+                  :class="`${getFlexDirection()} ${getAlignmentClass()}`" :style="{
+                    width: settings.width + 'px',
+                    minHeight: settings.height + 'px',
+                    background: getCompositeBackground(),
+                    borderRadius: `${settings.borderRadius.tl}px ${settings.borderRadius.tr}px ${settings.borderRadius.br}px ${settings.borderRadius.bl}px`,
+                    boxShadow: getBoxShadow(),
+                    border: getBorderStyle(),
+                    padding: `${settings.padding}px`,
+                    gap: `${settings.gap}px`,
+                  }">
+                  <span class="flex-shrink-0" :class="getAnimationClass()"
+                    :style="{ fontSize: settings.emojiSize + 'px', animationDuration: settings.animationDuration + 's' }"
+                    x-text="settings.emoji"></span>
+                  <div class="flex flex-col min-w-0 justify-center flex-1">
+                    <h3 class="font-bold leading-tight break-words"
+                      :style="{ fontSize: settings.titleSize + 'px', fontWeight: settings.titleWeight, letterSpacing: settings.letterSpacing + 'px', color: settings.titleColor }"
+                      x-text="settings.title"></h3>
+                    <p class="break-words whitespace-normal"
+                      :style="{ fontSize: settings.textSize + 'px', color: settings.textColor }" x-text="settings.text"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. CHATBAR VIEW -->
+          <div x-show="currentTab === 'chatbar'" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-3"
+            x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+            
+            <div x-data="chatbarPreviewController()" class="flex flex-col items-center justify-center gap-6 max-w-2xl mx-auto">
+              <div class="w-full flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-24 min-h-[400px] relative transition-all duration-300 shadow-xs">
+                <div class="flex justify-between items-center transition-all duration-200 cursor-pointer" @mouseenter="hovered = true" @mouseleave="hovered = false" :style="{
+                    width: settings.width + 'px',
+                    height: settings.height + 'px',
+                    background: getBackgroundStyle(),
+                    color: settings.textColor,
+                    borderRadius: `${settings.borderRadius.tl}px ${settings.borderRadius.tr}px ${settings.borderRadius.br}px ${settings.borderRadius.bl}px`,
+                    boxShadow: settings.shadow ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
+                    padding: '0 12px'
+                  }">
+                  <span class="inline-block" :style="{ fontSize: settings.textSize + 'px', letterSpacing: settings.letterSpacing + 'px' }" x-text="settings.text || 'Chat with us'"></span>
+                  <div class="flex items-center justify-center">
+                    <template x-if="settings.iconType === 'lucide' && settings.lucideIcon">
+                      <i :data-lucide="toKebabCase(settings.lucideIcon)" :style="{ color: settings.iconColor, width: settings.iconWidth + 'px', height: settings.iconHeight + 'px', opacity: hovered ? 1 : 0.8 }"></i>
+                    </template>
+                    <template x-if="settings.iconType === 'image' && settings.iconImageUrl">
+                      <img :src="settings.iconImageUrl" alt="icon" class="rounded" :style="{ objectFit: settings.iconFit, opacity: settings.iconOpacity, width: settings.iconWidth + 'px', height: settings.iconHeight + 'px', mixBlendMode: settings.iconBlend }" />
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. CHAT CONTACT VIEW -->
+          <div x-show="currentTab === 'chatcontact'" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-3"
+            x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+            
+            <div x-data='chatwidgetPreviewController()' class="flex flex-col items-center justify-center gap-6 max-w-2xl mx-auto">
+              <div class="w-full flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 min-h-[550px] relative transition-all duration-300 shadow-xs">
+                <div class="flex flex-col relative overflow-hidden bg-white dark:bg-neutral-800 transition-all duration-200" :style="{ width: settings.widgetWidth + 'px', height: settings.widgetHeight + 'px', boxShadow: settings.widgetShadow ? `0 0 ${settings.widgetShadowBlur}px ${settings.widgetShadowColor}` : 'none', border: settings.widgetBorderEnabled ? `${settings.widgetBorderWidth}px solid ${settings.widgetBorderColor}` : 'none', borderRadius: `${settings.widgetBorderRadius}px` }">
+                  <header class="flex justify-between items-center px-4 border-b flex-shrink-0" :style="{ height: settings.headerHeight + 'px', backgroundColor: settings.headerBgColor, color: settings.headerTextColor, borderColor: 'rgba(0,0,0,0.1)' }">
+                    <div class="flex items-center gap-2">
+                      <img :src="settings.logoUrl || 'https://via.placeholder.com/32'" alt="Logo" class="w-8 h-8 rounded-full object-cover bg-white" />
+                      <span class="text-sm font-semibold" x-text="settings.chatTitle"></span>
+                    </div>
+                    <nav class="flex gap-1.5 items-center">
+                      <template x-if="settings.showBackButton"><button class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="chevron-left" class="w-5 h-5"></i></button></template>
+                      <template x-if="settings.showMenuButton">
+                        <div class="relative">
+                          <button @click="showDropdown = !showDropdown" @click.outside="showDropdown = false" class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="menu" class="w-5 h-5"></i></button>
+                          <div x-show="showDropdown" style="display: none;" class="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-slate-800 rounded-md shadow-xl border border-slate-100 dark:border-slate-700 z-20 text-sm overflow-hidden text-slate-800 dark:text-slate-200">
+                            <button class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors">Send transcript</button>
+                            <button @click="showContactForm = !showContactForm; showDropdown = false" class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors" x-text="showContactForm ? 'Back to Chat' : 'Contact Form'"></button>
+                          </div>
+                        </div>
+                      </template>
+                      <template x-if="settings.showMinimizeButton"><button class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="minus" class="w-5 h-5"></i></button></template>
+                    </nav>
+                  </header>
+                  <div class="flex-1 overflow-y-auto p-4 chat-scroll relative" :style="{ background: getBackgroundStyle() }">
+                    <div x-show="!showContactForm" class="flex flex-col justify-end min-h-full">
+                      <template x-for="(msg, index) in messages" :key="index">
+                        <div class="flex mb-3" :class="msg.isUser ? 'justify-end' : 'justify-start'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100">
+                          <div class="max-w-[85%] break-words" :class="msg.isUser ? 'rounded-br-none' : 'rounded-bl-none'" :style="{ backgroundColor: msg.isUser ? settings.userMsgBgColor : settings.botMsgBgColor, color: msg.isUser ? settings.userMsgTextColor : settings.botMsgTextColor, fontSize: settings.msgFontSize + 'px', borderRadius: settings.msgBorderRadius + 'px', padding: settings.msgPadding + 'px' }">
+                            <span x-text="msg.text"></span>
+                            <template x-if="settings.showTimestamp"><div class="text-[10px] opacity-60 mt-1" x-text="msg.time"></div></template>
+                          </div>
+                        </div>
+                      </template>
+                      <template x-if="isTyping && settings.showTypingIndicator">
+                        <div class="flex justify-start mb-2" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0">
+                          <div class="flex items-center gap-1.5 px-3 py-2" :style="{ backgroundColor: settings.typingIndicatorBgColor, borderRadius: settings.msgBorderRadius + 'px' }">
+                            <span class="w-1.5 h-1.5 rounded-full animate-bounce" :style="{ backgroundColor: settings.typingIndicatorColor, animationDelay: '0ms' }"></span>
+                            <span class="w-1.5 h-1.5 rounded-full animate-bounce" :style="{ backgroundColor: settings.typingIndicatorColor, animationDelay: '150ms' }"></span>
+                            <span class="w-1.5 h-1.5 rounded-full animate-bounce" :style="{ backgroundColor: settings.typingIndicatorColor, animationDelay: '300ms' }"></span>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+                    <div x-show="showContactForm" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                      <div class="p-4" :style="{ backgroundColor: settings.formBgColor, borderRadius: settings.formBorderRadius + 'px', border: `1px solid ${settings.formBorderColor}` }">
+                        <div x-show="!isFormSubmitted" class="text-center mb-4">
+                          <p class="text-lg font-bold pb-1" :style="{ color: settings.formTitleColor }" x-text="settings.formMessage1"></p>
+                          <p class="text-xs" :style="{ color: settings.formMessageColor }" x-text="settings.formMessage2"></p>
+                        </div>
+                        <h3 x-show="!isFormSubmitted" class="text-sm font-bold mb-3" :style="{ color: settings.formTitleColor }" x-text="settings.formTitle"></h3>
+                        <form @submit.prevent="submitForm" class="space-y-3 relative">
+                          <div x-show="!isFormSubmitted">
+                            <label class="block text-[11px] font-bold mb-1" :style="{ color: settings.formLabelColor }">Name:</label>
+                            <input type="text" x-model="formData.name" placeholder="Your Name" class="w-full px-3 py-2 text-sm outline-none bg-transparent" :style="{ border: `1px solid ${settings.formInputBorderColor}`, borderRadius: settings.formInputBorderRadius + 'px', color: settings.formLabelColor }">
+                            <p x-show="formErrors.name" class="text-rose-500 text-[10px] mt-1 font-bold" x-text="formErrors.name"></p>
+                          </div>
+                          <div x-show="!isFormSubmitted">
+                            <label class="block text-[11px] font-bold mb-1" :style="{ color: settings.formLabelColor }">Email:</label>
+                            <input type="email" x-model="formData.email" placeholder="Your Email" class="w-full px-3 py-2 text-sm outline-none bg-transparent" :style="{ border: `1px solid ${settings.formInputBorderColor}`, borderRadius: settings.formInputBorderRadius + 'px', color: settings.formLabelColor }">
+                            <p x-show="formErrors.email" class="text-rose-500 text-[10px] mt-1 font-bold" x-text="formErrors.email"></p>
+                          </div>
+                          <div x-show="!isFormSubmitted">
+                            <label class="block text-[11px] font-bold mb-1" :style="{ color: settings.formLabelColor }">Message:</label>
+                            <textarea x-model="formData.message" rows="3" placeholder="Your Message" class="w-full px-3 py-2 text-sm outline-none resize-none bg-transparent" :style="{ border: `1px solid ${settings.formInputBorderColor}`, borderRadius: settings.formInputBorderRadius + 'px', color: settings.formLabelColor }"></textarea>
+                            <p x-show="formErrors.message" class="text-rose-500 text-[10px] mt-1 font-bold" x-text="formErrors.message"></p>
+                          </div>
+                          <div class="mt-4 flex flex-col items-center justify-center relative h-10">
+                            <button type="submit" class="absolute text-sm font-bold flex items-center justify-center transition-all duration-500 overflow-hidden cursor-pointer" :class="isFormSubmitted ? 'pointer-events-none' : ''" :style="{ backgroundColor: settings.submitBtnBgColor, color: settings.submitBtnFontColor, borderRadius: isFormSubmitted ? '50px' : settings.submitBtnBorderRadius + 'px', height: settings.submitBtnHeight + 'px', width: isFormSubmitted ? settings.submitBtnHeight + 'px' : '100%' }">
+                              <span x-show="!isFormSubmitted" x-text="settings.submitBtnText"></span>
+                              <i x-show="isFormSubmitted" data-lucide="check" class="w-5 h-5" style="display: none;"></i>
+                            </button>
+                          </div>
+                          <div x-show="isFormSubmitted" style="display: none;" class="text-center mt-2" x-transition:enter="transition delay-300 duration-300">
+                            <p class="text-sm font-bold" :style="{ color: settings.submitBtnBgColor }" x-text="settings.submitBtnSubmittedText"></p>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <div x-show="!showContactForm" class="p-3 border-t flex-shrink-0" :style="{ backgroundColor: settings.headerBgColor, borderColor: 'rgba(0,0,0,0.1)' }">
+                    <div class="flex items-center relative">
+                      <input type="text" x-model="newMessage" @keydown.enter="sendMessage" :placeholder="settings.inputPlaceholder" class="flex-1 outline-none w-full pr-[100px] bg-transparent" :style="{ color: settings.inputTextColor, borderRadius: settings.inputBorderRadius + 'px', height: settings.inputHeight + 'px', fontSize: settings.inputFontSize + 'px', paddingLeft: '12px', border: `1px solid ${settings.inputBorderColor}` }" />
+                      <div class="absolute right-1.5 flex gap-1 items-center">
+                        <template x-if="settings.showEmojiPicker">
+                          <div class="relative">
+                            <button @click="showEmojiPicker = !showEmojiPicker" @click.outside="showEmojiPicker = false" class="p-1.5 hover:opacity-70 cursor-pointer" :style="{ color: settings.emojiButtonColor }"><i data-lucide="smile" class="w-4 h-4"></i></button>
+                            <div x-show="showEmojiPicker" style="display: none;" class="absolute bottom-full right-0 mb-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 p-2 grid grid-cols-5 gap-1.5 z-20">
+                              <template x-for="emoji in emojis"><button @click="newMessage += emoji; showEmojiPicker = false" class="text-lg hover:bg-slate-100 dark:hover:bg-slate-700 rounded p-1 cursor-pointer" x-text="emoji"></button></template>
+                            </div>
+                          </div>
+                        </template>
+                        <template x-if="settings.showAttachButton"><button class="p-1.5 hover:opacity-70 cursor-pointer" :style="{ color: settings.attachButtonColor }"><i data-lucide="paperclip" class="w-4 h-4"></i></button></template>
+                        <button @click="sendMessage" class="ml-1 rounded-md flex items-center justify-center transition-colors cursor-pointer" :disabled="!newMessage.trim()" :style="{ backgroundColor: newMessage.trim() ? settings.sendBtnBgColor : '#d1d5db', color: settings.sendBtnIconColor, borderRadius: settings.sendBtnBorderRadius + 'px', width: settings.sendBtnSize + 'px', height: settings.sendBtnSize + 'px' }"><i data-lucide="send" class="w-4 h-4 ml-0.5"></i></button>
+                      </div>
+                    </div>
+                  </div>
+                  <template x-if="settings.showFooter"><div class="flex items-center justify-center text-[10px] font-medium border-t flex-shrink-0" :style="{ backgroundColor: settings.footerBgColor, color: settings.footerTextColor, height: settings.footerHeight + 'px', borderColor: 'rgba(0,0,0,0.1)' }" x-text="settings.footerText"></div></template>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Global JSON Load Error Notification Overlay -->
+  <div x-data="{ show: false, message: '' }" 
+       @show-json-error.window="show = true; message = $event.detail.message"
+       x-show="show" 
+       style="display: none;" 
+       class="fixed top-4 right-4 z-50 bg-rose-500 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 max-w-sm"
+       x-transition>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 shrink-0">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+    </svg>
+    <div class="text-xs">
+      <span class="font-bold block">Settings Load Warning</span>
+      <span x-text="message"></span>
+    </div>
+    <button @click="show = false" class="hover:opacity-80 ml-auto p-1 font-bold">×</button>
+  </div>
+
+  <!-- Modular Alpine Controller Script -->
+  <script>
+    // Global Bubble controller for preview page
+    window.previewBubbleController = function(settings) {
+      return {
+        settings: settings,
+        hovered: false,
+        getCompositeBackground() {
+          if (!this.settings || this.settings.gradientType === 'none') return this.settings ? this.settings.backgroundColor : '';
+          const stops = (this.settings.gradientStops || []).map(s => `${s.color} ${s.pos}%`).join(', ');
+          switch (this.settings.gradientType) {
+            case 'linear': return `linear-gradient(${this.settings.gradientAngle}deg, ${stops})`;
+            case 'radial': return `radial-gradient(circle, ${stops})`;
+            case 'conic': return `conic-gradient(from ${this.settings.gradientAngle}deg, ${stops})`;
+            default: return this.settings.backgroundColor;
+          }
+        },
+        getBoxShadow() {
+          if (!this.settings) return '';
+          const { boxShadowOffsetX, boxShadowOffsetY, boxShadowBlur, boxShadowSpread, boxShadowOpacity } = this.settings;
+          return `${boxShadowOffsetX || 0}px ${boxShadowOffsetY || 4}px ${boxShadowBlur || 20}px ${boxShadowSpread || 0}px rgba(0,0,0,${boxShadowOpacity || 0.15})`;
+        },
+        getInnerShadow() {
+          if (!this.settings || !this.settings.innerShadow || !this.settings.innerShadow.enabled) return '';
+          return `inset 0 6px ${this.settings.innerShadow.blur}px rgba(0,0,0,${this.settings.innerShadow.opacity})`;
+        },
+        getBorderImage() {
+          if (!this.settings || !this.settings.borderGradientEnabled) return '';
+          const stops = (this.settings.borderGradientStops || []).map(s => `${s.color} ${s.pos}%`).join(', ');
+          return `linear-gradient(${this.settings.borderGradientAngle}deg, ${stops}) 1`;
+        },
+        getBorderStyle() {
+          if (!this.settings) return {};
+          const style = {
+            borderWidth: `${this.settings.border ? this.settings.border.width : 0}px`,
+            borderStyle: this.settings.border ? this.settings.border.style : 'solid',
+            borderColor: this.settings.border ? this.settings.border.color : 'transparent'
+          };
+          if (this.settings.borderGradientEnabled) {
+            style.borderImage = this.getBorderImage();
+            style.borderColor = 'transparent';
+          }
+          return style;
+        },
+        getEntryAnimStyle() {
+          if (!this.settings) return {};
+          const duration = `${this.settings.animation ? this.settings.animation.duration : 300}ms`;
+          const delay = `${this.settings.animation ? this.settings.animation.delay : 0}ms`;
+          const ease = 'cubic-bezier(.2,.8,.2,1)';
+          let anim = '';
+          if (this.settings.animation && this.settings.animation.type !== 'none') {
+            anim = `${this.settings.animation.type} ${duration} ${ease} ${delay} both`;
+          }
+          if (this.settings.idleAnim && this.settings.idleAnim.enabled) {
+            const idleAnimName = this.settings.idleAnim.type === 'float' ? 'idleFloat' : 'idleBob';
+            const idleDuration = `${this.settings.idleAnim.duration || 3000}ms`;
+            const idleAnimString = `${idleAnimName} ${idleDuration} ease-in-out infinite`;
+            anim = anim ? `${anim}, ${idleAnimString}` : idleAnimString;
+          }
+          return anim ? { animation: anim } : {};
+        },
+        getNeonStyle() {
+          if (!this.settings || !this.settings.neon || !this.settings.neon.enabled) return {};
+          const intensity = this.settings.neon.intensity;
+          const color = this.settings.neon.color;
+          const shadow = this.getBoxShadow();
+          return {
+            filter: `drop-shadow(0 0 ${10 * intensity}px ${color})`,
+            boxShadow: `${shadow}, 0 0 ${10 * intensity}px ${color}, 0 0 ${25 * intensity}px ${color}`
+          };
+        },
+        getGlassStyle() {
+          if (!this.settings || !this.settings.glass || !this.settings.glass.enabled) return {};
+          return {
+            backdropFilter: `blur(${this.settings.glass.blur}px)`,
+            backgroundColor: `rgba(255,255,255,${this.settings.glass.bgOpacity})`
+          };
+        },
+        hexToRgba(hex, alpha) {
+          if (!hex) return '';
+          const v = hex.replace('#', '');
+          const bigint = parseInt(v.length === 3 ? v.split('').map(c => c + c).join('') : v, 16);
+          return `rgba(${(bigint >> 16) & 255},${(bigint >> 8) & 255},${bigint & 255},${alpha})`;
+        }
+      };
+    };
+    if (window.Alpine) {
+      window.Alpine.data('previewBubbleController', window.previewBubbleController);
+    } else {
+      document.addEventListener('alpine:init', () => {
+        window.Alpine.data('previewBubbleController', window.previewBubbleController);
+      });
+    }
+
+    // Global Bubble Tuner Controller
+    window.bubblePreviewController = function(initialSettings) {
+      return {
+        hovered: false,
+        settings: initialSettings,
+        getGradient() {
+          if (!this.settings || this.settings.gradientType === 'none') return '';
+          const stops = (this.settings.gradientStops || []).map(s => `${s.color} ${s.pos}%`).join(', ');
+          switch (this.settings.gradientType) {
+            case 'linear': return `linear-gradient(${this.settings.gradientAngle}deg, ${stops})`;
+            case 'radial': return `radial-gradient(circle, ${stops})`;
+            case 'conic': return `conic-gradient(from ${this.settings.gradientAngle}deg, ${stops})`;
+            default: return '';
+          }
+        },
+
+        getBoxShadow() {
+          if (!this.settings) return '';
+          const { boxShadowOffsetX, boxShadowOffsetY, boxShadowBlur, boxShadowSpread, boxShadowOpacity } = this.settings;
+          return `${boxShadowOffsetX}px ${boxShadowOffsetY}px ${boxShadowBlur}px ${boxShadowSpread}px rgba(0,0,0,${boxShadowOpacity})`;
+        },
+
+        getInnerShadow() {
+          if (!this.settings || !this.settings.innerShadow || !this.settings.innerShadow.enabled) return '';
+          return `inset 0 6px ${this.settings.innerShadow.blur}px rgba(0,0,0,${this.settings.innerShadow.opacity})`;
+        },
+
+        getCompositeBackground() {
+          if (!this.settings) return '';
+          return this.settings.gradientType !== 'none' ? this.getGradient() : this.settings.backgroundColor;
+        },
+
+        getBorderImage() {
+          if (!this.settings || !this.settings.borderGradientEnabled) return '';
+          const stops = (this.settings.borderGradientStops || []).map(s => `${s.color} ${s.pos}%`).join(', ');
+          return `linear-gradient(${this.settings.borderGradientAngle}deg, ${stops}) 1`;
+        },
+
+        getBorderStyle() {
+          if (!this.settings) return {};
+          const style = {
+            borderWidth: `${this.settings.border ? this.settings.border.width : 0}px`,
+            borderStyle: this.settings.border ? this.settings.border.style : 'solid',
+            borderColor: this.settings.border ? this.settings.border.color : 'transparent'
+          };
+          if (this.settings.borderGradientEnabled) {
+            style.borderImage = this.getBorderImage();
+            style.borderColor = 'transparent';
+          }
+          return style;
+        },
+
+        getEntryAnimStyle() {
+          if (!this.settings) return {};
+          const duration = `${this.settings.animation ? this.settings.animation.duration : 300}ms`;
+          const delay = `${this.settings.animation ? this.settings.animation.delay : 0}ms`;
+          const ease = 'cubic-bezier(.2,.8,.2,1)';
+          let anim = '';
+          if (this.settings.animation && this.settings.animation.type !== 'none') {
+            anim = `${this.settings.animation.type} ${duration} ${ease} ${delay} both`;
+          }
+          if (this.settings.idleAnim && this.settings.idleAnim.enabled) {
+            const idleAnimName = this.settings.idleAnim.type === 'float' ? 'idleFloat' : 'idleBob';
+            const idleDuration = `${this.settings.idleAnim.duration || 3000}ms`;
+            const idleAnimString = `${idleAnimName} ${idleDuration} ease-in-out infinite`;
+            anim = anim ? `${anim}, ${idleAnimString}` : idleAnimString;
+          }
+          return anim ? { animation: anim } : {};
+        },
+
+        getNeonStyle() {
+          if (!this.settings || !this.settings.neon || !this.settings.neon.enabled) return {};
+          const intensity = this.settings.neon.intensity;
+          const color = this.settings.neon.color;
+          const shadow = this.getBoxShadow();
+          return {
+            filter: `drop-shadow(0 0 ${10 * intensity}px ${color})`,
+            boxShadow: `${shadow}, 0 0 ${10 * intensity}px ${color}, 0 0 ${25 * intensity}px ${color}`
+          };
+        },
+
+        getGlassStyle() {
+          if (!this.settings || !this.settings.glass || !this.settings.glass.enabled) return {};
+          return {
+            backdropFilter: `blur(${this.settings.glass.blur}px)`,
+            backgroundColor: `rgba(255,255,255,${this.settings.glass.bgOpacity})`
+          };
+        },
+
+        hexToRgba(hex, alpha) {
+          if (!hex) return '';
+          const v = hex.replace('#', '');
+          const bigint = parseInt(v.length === 3 ? v.split('').map(c => c + c).join('') : v, 16);
+          return `rgba(${(bigint >> 16) & 255},${(bigint >> 8) & 255},${bigint & 255},${alpha})`;
+        },
+
+        cssKeyframes() {
+          if (!this.settings) return '';
+          return `
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes popIn { 0% { transform: scale(.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+            @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            @keyframes slideIn { from { transform: translateX(-16px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+            @keyframes rise { from { transform: translateY(24px); filter: blur(6px); opacity: 0; } to { transform: translateY(0); filter: blur(0); opacity: 1; } }
+            @keyframes idleFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-${this.settings.idleAnim ? this.settings.idleAnim.amplitude : 6}px); } }
+            @keyframes idleBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-${this.settings.idleAnim ? this.settings.idleAnim.amplitude : 6}px) scale(1.01); } }
+            @keyframes dotBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+            @keyframes dotPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+          `;
+        },
+
+        init() {
+          this.$watch('settings.backgroundLucideIcon', () => {
+            this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
+          });
+          this.$watch('settings.backgroundOverlayType', () => {
+            this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
+          });
+          this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
+        }
+      };
+    };
+    if (window.Alpine) {
+      window.Alpine.data('bubblePreviewController', window.bubblePreviewController);
+    } else {
+      document.addEventListener('alpine:init', () => {
+        window.Alpine.data('bubblePreviewController', window.bubblePreviewController);
+      });
+    }
+
+    // Global Eyecatcher Tuner Controller
+    window.eyecatcherPreviewController = function (initialSettings) {
+      return {
+        settings: initialSettings,
+        getCompositeBackground() {
+          if (!this.settings) return '';
+          if (!this.settings.gradientEnabled) return this.settings.bgColor;
+          const stops = (this.settings.gradientStops || []).map(s => `${s.color} ${s.pos}%`).join(', ');
+          switch (this.settings.gradientType) {
+            case 'linear': return `linear-gradient(${this.settings.gradientAngle}deg, ${stops})`;
+            case 'radial': return `radial-gradient(circle, ${stops})`;
+            case 'conic': return `conic-gradient(from ${this.settings.gradientAngle}deg, ${stops})`;
+            default: return this.settings.bgColor;
+          }
+        },
+
+        getBoxShadow() {
+          if (!this.settings || !this.settings.shadow) return 'none';
+          return `${this.settings.shadowX}px ${this.settings.shadowY}px ${this.settings.shadowBlur}px ${this.settings.shadowColor}`;
+        },
+
+        getBorderStyle() {
+          if (!this.settings || !this.settings.borderEnabled) return 'none';
+          return `${this.settings.borderWidth}px solid ${this.settings.borderColor}`;
+        },
+
+        getFlexDirection() {
+          if (!this.settings) return 'flex-row';
+          if (this.settings.emojiPosition === 'top') return 'flex-col';
+          if (this.settings.emojiPosition === 'right') return 'flex-row-reverse';
+          return 'flex-row';
+        },
+
+        getAlignmentClass() {
+          if (!this.settings) return 'items-start text-left';
+          if (this.settings.contentAlignment === 'center') return 'items-center text-center';
+          if (this.settings.contentAlignment === 'right') return 'items-end text-right';
+          return 'items-start text-left';
+        },
+
+        getAnimationClass() {
+          if (!this.settings || !this.settings.animationEnabled || this.settings.animationType === 'none') return '';
+          return `animate-${this.settings.animationType}`;
+        }
+      };
+    };
+    if (window.Alpine) {
+      window.Alpine.data('eyecatcherPreviewController', window.eyecatcherPreviewController);
+    } else {
+      document.addEventListener('alpine:init', () => {
+        window.Alpine.data('eyecatcherPreviewController', window.eyecatcherPreviewController);
+      });
+    }
+
+    // Global ChatBar Tuner Controller
+    window.chatbarPreviewController = function() {
+      return {
+        settings: window.Alpine ? Alpine.store('chatbar') : {},
+        hovered: false,
+        getBackgroundStyle() {
+          if (!this.settings || !this.settings.gradientEnabled) return this.settings ? this.settings.bgColor : '';
+          const stops = (this.settings.gradientStops || []).map(s => `${s.color} ${s.pos}%`).join(', ');
+          switch (this.settings.gradientType) {
+            case 'linear': return `linear-gradient(${this.settings.gradientAngle}deg, ${stops})`;
+            case 'radial': return `radial-gradient(circle, ${stops})`;
+            case 'conic': return `conic-gradient(from ${this.settings.gradientAngle}deg, ${stops})`;
+            default: return this.settings.bgColor;
+          }
+        },
+
+        toKebabCase(str) {
+          if (!str) return '';
+          return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+        },
+
+        init() {
+          this.$watch('settings.lucideIcon', () => {
+            this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
+          });
+          this.$watch('settings.iconType', () => {
+            this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
+          });
+          this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
+        }
+      };
+    };
+    if (window.Alpine) {
+      window.Alpine.data('chatbarPreviewController', window.chatbarPreviewController);
+    } else {
+      document.addEventListener('alpine:init', () => {
+        window.Alpine.data('chatbarPreviewController', window.chatbarPreviewController);
+      });
+    }
+
+    // Global Chat Contact widget controller
+    window.chatwidgetPreviewController = function () {
+      const initialMessages = [
+        { text: 'Hi! How can I help you today?', isUser: false, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+        { text: 'I need help with my order', isUser: true, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+        { text: "I'd be happy to help! Can you provide your order number?", isUser: false, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+      ];
+
+      return {
+        settings: window.Alpine ? Alpine.store('chatcontact') : {},
+        messages: initialMessages,
+        newMessage: '',
+        isTyping: false,
+        showEmojiPicker: false,
+        showDropdown: false,
+        showContactForm: false,
+        isFormSubmitted: false,
+        formData: { name: '', email: '', subject: '', message: '' },
+        formErrors: { name: '', email: '', subject: '', message: '' },
+        emojis: ['😊', '👍', '❤️', '😂', '😢', '😎', '🤔', '👋', '🎉', '💯'],
+
+        getBackgroundStyle() {
+          if (!this.settings || !this.settings.chatBgGradientEnabled) return this.settings ? this.settings.chatBgColor : '';
+          const stops = (this.settings.chatBgGradientStops || []).map(s => `${s.color} ${s.pos}%`).join(', ');
+          switch (this.settings.chatBgGradientType) {
+            case 'linear': return `linear-gradient(${this.settings.chatBgGradientAngle}deg, ${stops})`;
+            case 'radial': return `radial-gradient(circle, ${stops})`;
+            case 'conic': return `conic-gradient(from ${this.settings.chatBgGradientAngle}deg, ${stops})`;
+            default: return this.settings.chatBgColor;
+          }
+        },
+
+        sendMessage() {
+          if (this.newMessage.trim()) {
+            this.messages.push({
+              text: this.newMessage.trim(),
+              isUser: true,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            this.newMessage = '';
+            this.isTyping = true;
+            this.scrollToBottom();
+
+            setTimeout(() => {
+              this.isTyping = false;
+              this.messages.push({
+                text: "Thanks! I'm checking that right now...",
+                isUser: false,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              });
+              this.scrollToBottom();
+            }, 2000);
+          }
+        },
+
+        scrollToBottom() {
+          this.$nextTick(() => {
+            const container = document.querySelector('.chat-scroll');
+            if (container) container.scrollTop = container.scrollHeight;
+          });
+        },
+
+        validateForm() {
+          let valid = true;
+          this.formErrors = { name: '', email: '', message: '' };
+
+          if (!this.formData.name.trim()) { this.formErrors.name = 'Name is required'; valid = false; }
+          if (!this.formData.email.trim()) {
+            this.formErrors.email = 'Email is required'; valid = false;
+          } else if (!/\S+@\S+\.\S+/.test(this.formData.email)) {
+            this.formErrors.email = 'Invalid email'; valid = false;
+          }
+          if (!this.formData.message.trim()) { this.formErrors.message = 'Message is required'; valid = false; }
+          return valid;
+        },
+
+        submitForm() {
+          if (this.validateForm()) {
+            this.isFormSubmitted = true;
+            setTimeout(() => {
+              this.showContactForm = false;
+              this.isFormSubmitted = false;
+              this.formData = { name: '', email: '', subject: '', message: '' };
+            }, 2000);
+          }
+        },
+
+        init() {
+          this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
+          this.$watch('showDropdown', () => this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }));
+          this.$watch('showContactForm', () => this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }));
+          this.$watch('isFormSubmitted', () => this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }));
+        }
+      };
+    };
+    if (window.Alpine) {
+      window.Alpine.data('chatwidgetPreviewController', window.chatwidgetPreviewController);
+    } else {
+      document.addEventListener('alpine:init', () => {
+        window.Alpine.data('chatwidgetPreviewController', window.chatwidgetPreviewController);
+      });
+    }
+
+    document.addEventListener('alpine:init', () => {
+      // Theme Persisted Store
+      Alpine.store('theme', {
+        dark: localStorage.getItem('theme') === 'dark',
+        init() {
+          this.apply();
+        },
+        toggle() {
+          this.dark = !this.dark;
+          localStorage.setItem('theme', this.dark ? 'dark' : 'light');
+          this.apply();
+        },
+        apply() {
+          if (this.dark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        }
+      });
+
+      // Sidebar Persisted Store
+      Alpine.store('sidebar', {
+        expanded: localStorage.getItem('sidebar-expanded') !== 'false',
+        mobileOpen: false,
+        toggle() {
+          this.expanded = !this.expanded;
+          localStorage.setItem('sidebar-expanded', this.expanded);
+        },
+        toggleMobile() {
+          this.mobileOpen = !this.mobileOpen;
+        }
+      });
+
+      // Dashboard View Controller
+      Alpine.data('dashboardController', () => ({
+        currentTab: 'preview',
+        setTab(tab) {
+          this.currentTab = tab;
+          Alpine.store('sidebar').mobileOpen = false;
+        }
+      }));
+
+      // Initialize stores with fallbacks to avoid layout crashes during configuration retrieval
+      Alpine.store('bubble', {
+        width: 70, height: 70, backgroundColor: '#4f46e5', gradientType: 'none', gradientStops: [{color:'#4f46e5',pos:0},{color:'#a855f7',pos:100}],
+        borderRadius: { tl: 35, tr: 35, br: 35, bl: 35 }, border: { width: 0, style: 'solid', color: 'transparent' },
+        outlineRing: { enabled: false, width: 2, color: '#ffffff', opacity: 0.5 },
+        animation: { type: 'pop', duration: 300, delay: 0 }, idleAnim: { enabled: true, type: 'float', duration: 3000, amplitude: 6 }
+      });
+
+      Alpine.store('eyecatcher', {
+        width: 280, height: 80, bgColor: '#ffffff', textColor: '#4f46e5', titleColor: '#1f2937', title: 'Hello there!', text: 'Click me to chat',
+        borderRadius: { tl: 16, tr: 16, br: 16, bl: 16 }, gap: 8, padding: 12, emoji: '👋', emojiSize: 24, titleSize: 14, titleWeight: '700', textSize: 12,
+        gradientEnabled: false, gradientStops: [{color:'#ffffff',pos:0},{color:'#f3f4f6',pos:100}], gradientType: 'linear', gradientAngle: 90,
+        borderEnabled: true, borderWidth: 1, borderColor: '#e5e7eb', shadow: true, shadowX: 0, shadowY: 4, shadowBlur: 12, shadowColor: 'rgba(0,0,0,0.05)',
+        animationEnabled: true, animationType: 'wave', animationDuration: 2
+      });
+
+      Alpine.store('chatbar', {
+        text: "Chat with us", bgColor: "#007bff", textColor: "#ffffff", textSize: 14, letterSpacing: 0, gradientEnabled: false,
+        gradientStops: [{ color: "#007bff", pos: 0 }, { color: "#a855f7", pos: 100 }], gradientType: "linear", gradientAngle: 90,
+        iconType: "lucide", iconColor: "#ffffff", lucideIcon: "MessageCircle", iconImageUrl: "", iconFit: "contain", iconOpacity: 1,
+        iconBlend: "normal", iconWidth: 20, iconHeight: 20, width: 255, height: 40, shadow: true, borderRadius: { tl: 20, tr: 20, bl: 20, br: 20 }
+      });
+
+      Alpine.store('chatcontact', {
+        widgetWidth: 350, widgetHeight: 500, widgetBorderRadius: 16, widgetShadow: true, widgetShadowBlur: 20, widgetShadowColor: 'rgba(0,0,0,0.15)',
+        widgetBorderEnabled: true, widgetBorderWidth: 1, widgetBorderColor: '#e5e7eb', headerHeight: 60, headerBgColor: '#ffffff',
+        headerTextColor: '#111827', logoUrl: 'https://cdn-icons-png.flaticon.com/512/4712/4712035.png', chatTitle: 'Customer Support',
+        showBackButton: false, showMenuButton: true, showMinimizeButton: true, chatBgColor: '#f9fafb', chatBgGradientEnabled: false,
+        userMsgBgColor: '#4f46e5', userMsgTextColor: '#ffffff', botMsgBgColor: '#ffffff', botMsgTextColor: '#1f2937', msgFontSize: 14,
+        msgBorderRadius: 12, msgPadding: 10, showTimestamp: true, showTypingIndicator: true, typingIndicatorBgColor: '#ffffff',
+        typingIndicatorColor: '#9ca3af', inputHeight: 48, inputBgColor: '#ffffff', inputTextColor: '#111827', inputBorderColor: '#e5e7eb',
+        inputBorderRadius: 24, inputFontSize: 14, inputPlaceholder: 'Write a message...', showEmojiPicker: true, emojiButtonColor: '#9ca3af',
+        showAttachButton: true, attachButtonColor: '#9ca3af', sendBtnBgColor: '#4f46e5', sendBtnIconColor: '#ffffff', sendBtnBorderRadius: 8,
+        sendBtnSize: 32, showFooter: true, footerHeight: 30, footerBgColor: '#ffffff', footerTextColor: '#9ca3af', footerText: 'Powered by Zotly',
+        formBgColor: '#ffffff', formBorderRadius: 12, formBorderColor: '#e5e7eb', formTitleColor: '#111827', formMessageColor: '#6b7280',
+        formMessage1: 'Leave a message', formMessage2: 'We usually respond in a few hours.', formTitle: 'Contact Us', formLabelColor: '#374151',
+        formInputBgColor: '#f9fafb', formInputBorderColor: '#d1d5db', formInputBorderRadius: 8, submitBtnBgColor: '#4f46e5',
+        submitBtnFontColor: '#ffffff', submitBtnBorderRadius: 24, submitBtnHeight: 40, submitBtnText: 'Send Message',
+        submitBtnSubmittedText: 'Message Sent Successfully!', scrollbarWidth: 6, scrollbarTrackColor: 'transparent', scrollbarThumbColor: 'rgba(0,0,0,0.15)'
+      });
+
+      // Load static JSON configuration files reactively
+      const configFiles = [
+        { key: 'bubble', path: 'widgets/bubble/settings.json' },
+        { key: 'eyecatcher', path: 'widgets/eyecatcher/settings.json' },
+        { key: 'chatbar', path: 'widgets/chatbar/settings.json' },
+        { key: 'chatcontact', path: 'widgets/chatcontact/settings.json' }
+      ];
+
+      configFiles.forEach(cfg => {
+        fetch(cfg.path)
+          .then(res => {
+            if (!res.ok) throw new Error(`HTTP status ${res.status} while fetching ${cfg.path}`);
+            return res.json();
+          })
+          .then(data => {
+            Object.assign(Alpine.store(cfg.key), data);
+            
+            // Re-trigger icon parsing once settings are applied
+            setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 50);
+          })
+          .catch(err => {
+            console.error(`Error loading JSON config for ${cfg.key}:`, err);
+            window.dispatchEvent(new CustomEvent('show-json-error', { 
+              detail: { message: `Could not load ${cfg.path}. Details: ${err.message}` } 
+            }));
+          });
+      });
+    });
+  </script>
+
+</body>
+</html>
