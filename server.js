@@ -36,6 +36,15 @@ try {
   console.error('Error loading eyecatcher settings:', err);
 }
 
+// Load ChatBar widget settings
+let chatbarSettings = {};
+try {
+  const rawSettings = fs.readFileSync(path.join(__dirname, 'widgets', 'chatbar', 'settings.json'), 'utf-8');
+  chatbarSettings = JSON.parse(rawSettings);
+} catch (err) {
+  console.error('Error loading chatbar settings:', err);
+}
+
 // In-memory databases
 let tasks = [
   { id: 1, text: 'Master HTMX out-of-band swaps', completed: true },
@@ -72,12 +81,12 @@ function renderTaskCounterHTML() {
    Routes & HTMX Endpoints
    ========================================================================== */
 
-// 1. Home Page Route - Map eyecatcherSettings to the explicit variable expected by the template
 // 1. Home Page Route - Pass separate config payloads without overlapping properties
 app.get('/', (req, res) => {
   res.render('index', {
     bubbleSettings: bubbleSettings,
-    eyecatcherSettings: eyecatcherSettings
+    eyecatcherSettings: eyecatcherSettings,
+    chatbarSettings: chatbarSettings 
   });
 });
 
@@ -198,7 +207,6 @@ app.delete('/api/tasks/:id', (req, res) => {
     res.status(404).send('Task not found');
   }
 });
-
 
 // Start server
 app.listen(PORT, () => {

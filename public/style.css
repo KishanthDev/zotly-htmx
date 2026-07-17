@@ -124,3 +124,33 @@ html.dark {
   background-color: #f8fafc; /* light slate */
   color: #0f172a;
 }
+
+/* ChatBar Widget Component Integrated CSS */
+.chat-bar-widget {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 255px;
+  height: 40px;
+  background: #007bff;
+  color: #ffffff;
+  border-radius: 20px 20px 20px 20px;
+  box-shadow: 0 4px 14px rgba(0, 123, 255, 0.35);
+  padding: 0 14px;
+  cursor: pointer;
+  font-family: var(--font-inter);
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  user-select: none;
+}
+
+.chat-bar-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.45);
+}
+
+.chat-bar-widget:active {
+  transform: translateY(0);
+}

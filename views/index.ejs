@@ -1,106 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head') %>
-<body class="antialiased">
-  
-  <div 
-    x-data="dashboardController"
-    class="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 font-inter flex flex-col relative"
-  >
-    <!-- Background Glows -->
-    <div class="accent-glow top-[100px] left-[50px]"></div>
-    <div class="accent-glow-emerald bottom-[150px] right-[50px]"></div>
 
-    <!-- 1. TOP NAVBAR -->
-    <%- include('partials/navbar') %>
+  <body class="antialiased">
 
-    <!-- Main Flex Shell -->
-    <div class="flex flex-1 relative min-h-0">
+    <div x-data="dashboardController"
+      class="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 font-inter flex flex-col relative">
+      <!-- Background Glows -->
+      <div class="accent-glow top-[100px] left-[50px]"></div>
+      <div class="accent-glow-emerald bottom-[150px] right-[50px]"></div>
 
-      <!-- 2. SIDEBAR -->
-      <%- include('partials/sidebar') %>
+      <!-- 1. TOP NAVBAR -->
+      <%- include('partials/navbar') %>
 
-      <!-- 3. MAIN CONTENT CONTAINER -->
-      <main class="flex-1 p-4 md:p-8 overflow-y-auto w-full z-10">
-        <div class="max-w-5xl mx-auto w-full space-y-6">
+        <!-- Main Flex Shell -->
+        <div class="flex flex-1 relative min-h-0">
 
-          <!-- View Title Header -->
-          <div class="pb-4 border-b border-slate-100 dark:border-slate-900/60 mb-6">
-            <span class="text-3xs uppercase tracking-widest font-extrabold text-indigo-500 font-outfit">Demonstration Panel</span>
-            <h2 x-show="currentTab === 'dashboard'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1">Performance & Analytics</h2>
-            <h2 x-show="currentTab === 'search'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1" style="display: none;">Interactive Directory</h2>
-            <h2 x-show="currentTab === 'tasks'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1" style="display: none;">Reactive Task Manager</h2>
-            <h2 x-show="currentTab === 'bubble'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1" style="display: none;">Bubble Pixel Playground</h2>
-            <h2 x-show="currentTab === 'eyecatcher'" x-transition class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1" style="display: none;">Eyecatcher Tuner</h2>
-          </div>
+          <!-- 2. SIDEBAR -->
+          <%- include('partials/sidebar') %>
 
-          <!-- Views -->
-          <%- include('partials/dashboard') %>
-          <%- include('partials/search') %>
-          <%- include('partials/tasks') %>
-          
-          <div x-show="currentTab === 'bubble'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-3" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-            <%- include('../widgets/bubble/bubblePreview', { settings: bubbleSettings }) %>
-          </div>
+            <!-- 3. MAIN CONTENT CONTAINER -->
+            <main class="flex-1 p-4 md:p-8 overflow-y-auto w-full z-10">
+              <div class="max-w-5xl mx-auto w-full space-y-6">
 
-          <div x-show="currentTab === 'eyecatcher'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-3" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-            <%- include('../widgets/eyecatcher/eyecatcherPreview', { settings: eyecatcherSettings }) %>
-          </div>
+                <!-- View Title Header -->
+                <div class="pb-4 border-b border-slate-100 dark:border-slate-900/60 mb-6">
+                  <span
+                    class="text-3xs uppercase tracking-widest font-extrabold text-indigo-500 font-outfit">Demonstration
+                    Panel</span>
+                  <h2 x-show="currentTab === 'dashboard'" x-transition
+                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1">Performance &
+                    Analytics</h2>
+                  <h2 x-show="currentTab === 'search'" x-transition
+                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
+                    style="display: none;">Interactive Directory</h2>
+                  <h2 x-show="currentTab === 'tasks'" x-transition
+                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
+                    style="display: none;">Reactive Task Manager</h2>
+                  <h2 x-show="currentTab === 'bubble'" x-transition
+                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
+                    style="display: none;">Bubble Pixel Playground</h2>
+                  <h2 x-show="currentTab === 'eyecatcher'" x-transition
+                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
+                    style="display: none;">Eyecatcher Tuner</h2>
+                  <h2 x-show="currentTab === 'chatbar'" x-transition
+                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
+                    style="display: none;">Chatbar</h2>
+                </div>
+
+                <!-- Views -->
+                <%- include('partials/dashboard') %>
+                  <%- include('partials/search') %>
+                    <%- include('partials/tasks') %>
+
+                      <div x-show="currentTab === 'bubble'" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-3"
+                        x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                        <%- include('../widgets/bubble/bubblePreview', { settings: typeof bubbleSettings !=='undefined'
+                          ? bubbleSettings : {} }) %>
+                      </div>
+
+                      <div x-show="currentTab === 'eyecatcher'" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-3"
+                        x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                        <%- include('../widgets/eyecatcher/eyecatcherPreview', { settings: typeof eyecatcherSettings
+                          !=='undefined' ? eyecatcherSettings : {} }) %>
+                      </div>
+
+                      <div x-show="currentTab === 'chatbar'" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-3"
+                        x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                        <%- include('../widgets/chatbar/chatbarPreview', { chatbarSettings: typeof chatbarSettings
+                          !=='undefined' ? chatbarSettings : {} }) %>
+                      </div>
+
+              </div>
+            </main>
 
         </div>
-      </main>
 
+        <!--------------------------------------------------------------------------------------------------------->
+        <!-- Floating Live ChatBar Widget (Integrated & Available in UI) -->
+        <div x-data="{ open: false, chatText: '' }"
+          class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 transition-all duration-300">
+          <!-- Live ChatBar Trigger Button using exact JSON CSS & Settings -->
+          <div @click="open = !open"
+            class="chat-bar-widget flex items-center justify-between transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] cursor-pointer group shadow-lg"
+            :style="typeof chatbarSettings !== 'undefined' ? {
+          width: (chatbarSettings.width || 255) + 'px',
+          height: (chatbarSettings.height || 40) + 'px',
+          background: chatbarSettings.gradientEnabled && chatbarSettings.gradientStops ? (chatbarSettings.gradientType === 'linear' ? `linear-gradient(${chatbarSettings.gradientAngle}deg, ${chatbarSettings.gradientStops[0].color}, ${chatbarSettings.gradientStops[1].color})` : chatbarSettings.bgColor) : (chatbarSettings.bgColor || '#007bff'),
+          color: chatbarSettings.textColor || '#ffffff',
+          borderRadius: chatbarSettings.borderRadius ? `${chatbarSettings.borderRadius.tl}px ${chatbarSettings.borderRadius.tr}px ${chatbarSettings.borderRadius.br}px ${chatbarSettings.borderRadius.bl}px` : '20px',
+          boxShadow: chatbarSettings.shadow ? '0 4px 14px rgba(0, 123, 255, 0.35)' : 'none',
+          padding: '0 14px'
+        } : {}">
+            <span class="font-semibold text-sm tracking-wide"
+              x-text="typeof chatbarSettings !== 'undefined' && chatbarSettings.text ? chatbarSettings.text : 'Chat with us'"></span>
+            <div class="flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="transition-transform duration-300 group-hover:rotate-12">
+                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <!--------------------------------------------------------------------------------------------------------->
     </div>
-  </div>
 
-  <!-- Modular Alpine Controller Script -->
-  <script>
-    document.addEventListener('alpine:init', () => {
-      
-      // Theme Persisted Store
-      Alpine.store('theme', {
-        dark: localStorage.getItem('theme') === 'dark',
-        init() {
-          this.apply();
-        },
-        toggle() {
-          this.dark = !this.dark;
-          localStorage.setItem('theme', this.dark ? 'dark' : 'light');
-          this.apply();
-        },
-        apply() {
-          if (this.dark) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
+    <!-- Modular Alpine Controller Script -->
+    <script>
+      document.addEventListener('alpine:init', () => {
+
+        // Theme Persisted Store
+        Alpine.store('theme', {
+          dark: localStorage.getItem('theme') === 'dark',
+          init() {
+            this.apply();
+          },
+          toggle() {
+            this.dark = !this.dark;
+            localStorage.setItem('theme', this.dark ? 'dark' : 'light');
+            this.apply();
+          },
+          apply() {
+            if (this.dark) {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+            }
           }
-        }
+        });
+
+        // Sidebar Persisted Store
+        Alpine.store('sidebar', {
+          expanded: localStorage.getItem('sidebar-expanded') !== 'false',
+          mobileOpen: false,
+          toggle() {
+            this.expanded = !this.expanded;
+            localStorage.setItem('sidebar-expanded', this.expanded);
+          },
+          toggleMobile() {
+            this.mobileOpen = !this.mobileOpen;
+          }
+        });
+
+        // Dashboard View Controller
+        Alpine.data('dashboardController', () => ({
+          currentTab: 'dashboard',
+          setTab(tab) {
+            this.currentTab = tab;
+            Alpine.store('sidebar').mobileOpen = false;
+          }
+        }));
+
       });
+    </script>
 
-      // Sidebar Persisted Store
-      Alpine.store('sidebar', {
-        expanded: localStorage.getItem('sidebar-expanded') !== 'false',
-        mobileOpen: false,
-        toggle() {
-          this.expanded = !this.expanded;
-          localStorage.setItem('sidebar-expanded', this.expanded);
-        },
-        toggleMobile() {
-          this.mobileOpen = !this.mobileOpen;
-        }
-      });
+  </body>
 
-      // Dashboard View Controller
-      Alpine.data('dashboardController', () => ({
-        currentTab: 'dashboard',
-        setTab(tab) {
-          this.currentTab = tab;
-          Alpine.store('sidebar').mobileOpen = false;
-        }
-      }));
-
-    });
-  </script>
-
-</body>
 </html>

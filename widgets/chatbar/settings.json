@@ -1,0 +1,34 @@
+{
+  "text": "Chat with us",
+  "bgColor": "#007bff",
+  "textColor": "#ffffff",
+  "gradientEnabled": false,
+  "gradientStops": [
+    {
+      "color": "#007bff",
+      "pos": 0
+    },
+    {
+      "color": "#a855f7",
+      "pos": 100
+    }
+  ],
+  "gradientType": "linear",
+  "gradientAngle": 90,
+  "iconType": "lucide",
+  "iconColor": "#ffffff",
+  "lucideIcon": "MessageCircle",
+  "iconImageUrl": "",
+  "iconFit": "contain",
+  "iconOpacity": 1,
+  "iconBlend": "normal",
+  "width": 255,
+  "height": 40,
+  "borderRadius": {
+    "tl": 20,
+    "tr": 20,
+    "bl": 20,
+    "br": 20
+  },
+  "shadow": true
+}
