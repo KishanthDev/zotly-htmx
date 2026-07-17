@@ -3,7 +3,7 @@
   "text": "How can we help you today?",
   "emoji": "👋",
   "width": 280,
-  "height": 120,
+  "height": 90,
   "bgColor": "#3b82f6",
   "textColor": "#ffffff",
   "titleColor": "#ffffff",
@@ -21,8 +21,14 @@
   "gradientType": "linear",
   "gradientAngle": 135,
   "gradientStops": [
-    { "color": "#3b82f6", "pos": 0 },
-    { "color": "#8b5cf6", "pos": 100 }
+    {
+      "color": "#3b82f6",
+      "pos": 0
+    },
+    {
+      "color": "#8b5cf6",
+      "pos": 100
+    }
   ],
   "shadow": true,
   "shadowColor": "#000000",
