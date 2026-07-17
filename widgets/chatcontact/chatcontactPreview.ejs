@@ -1,0 +1,747 @@
+<!-- Store Settings Safely to avoid EJS quote conflicts -->
+<script id="chatwidget-settings-data" type="application/json">
+  <%- JSON.stringify(typeof chatwidgetSettings !== 'undefined' ? chatwidgetSettings : {}) %>
+</script>
+
+<!-- Dynamic Custom Scrollbar for Chat Area -->
+<style x-text="`
+  .chat-scroll::-webkit-scrollbar { width: ${settings.scrollbarWidth}px; }
+  .chat-scroll::-webkit-scrollbar-track { background: ${settings.scrollbarTrackColor}; }
+  .chat-scroll::-webkit-scrollbar-thumb { background: ${settings.scrollbarThumbColor}; border-radius: 10px; }
+`"></style>
+
+<!-- Chat Widget Preview Playground Component -->
+<div x-data='window.chatwidgetPreviewController()' class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+  <!-- LEFT & CENTER: COMPONENT PREVIEW CONTAINER -->
+  <div class="lg:col-span-2 flex flex-col gap-4">
+    <div
+      class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 min-h-[550px] relative transition-all duration-300">
+
+      <!-- Save & Download Controls in Top Right -->
+      <div class="absolute top-4 right-4 flex space-x-2 z-10">
+        <button @click="copySettings()"
+          :class="copied ? 'bg-emerald-500 text-white' : 'bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900'"
+          class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 cursor-pointer">
+          <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+            stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.4m1.5 13.5h9.75a1.125 1.125 0 0 0 1.125-1.125V7.875a1.125 1.125 0 0 0-1.125-1.125H5.4M9 13.5h5.625M9 16.5h5.625m-5.625-6h1.5m-1.5 3h1.5" />
+          </svg>
+          <svg x-show="copied" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          <span x-text="copied ? 'Copied!' : 'Copy JSON'"></span>
+        </button>
+        <button @click="saveSettings()"
+          :class="saved ? 'bg-emerald-500 text-white' : 'bg-indigo-600 hover:bg-indigo-500 text-white'"
+          class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 cursor-pointer">
+          <svg x-show="!saved" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+            stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+          </svg>
+          <svg x-show="saved" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          <span x-text="saved ? 'Saved!' : 'Save Widget'"></span>
+        </button>
+      </div>
+
+      <!-- MAIN CHAT WIDGET PREVIEW OBJECT -->
+      <div class="flex flex-col relative overflow-hidden bg-white dark:bg-neutral-800 transition-all duration-200"
+        :style="{
+          width: settings.widgetWidth + 'px',
+          height: settings.widgetHeight + 'px',
+          boxShadow: settings.widgetShadow ? `0 0 ${settings.widgetShadowBlur}px ${settings.widgetShadowColor}` : 'none',
+          border: settings.widgetBorderEnabled ? `${settings.widgetBorderWidth}px solid ${settings.widgetBorderColor}` : 'none',
+          borderRadius: `${settings.widgetBorderRadius}px`
+        }">
+        <!-- Header -->
+        <header class="flex justify-between items-center px-4 border-b flex-shrink-0" :style="{
+            height: settings.headerHeight + 'px',
+            backgroundColor: settings.headerBgColor,
+            color: settings.headerTextColor,
+            borderColor: 'rgba(0,0,0,0.1)'
+          }">
+          <div class="flex items-center gap-2">
+            <img :src="settings.logoUrl || 'https://via.placeholder.com/32'" alt="Logo"
+              class="w-8 h-8 rounded-full object-cover bg-white" />
+            <span class="text-sm font-semibold" x-text="settings.chatTitle"></span>
+          </div>
+          <nav class="flex gap-1.5 items-center">
+            <template x-if="settings.showBackButton">
+              <button class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="chevron-left"
+                  class="w-5 h-5"></i></button>
+            </template>
+            <template x-if="settings.showMenuButton">
+              <div class="relative">
+                <button @click="showDropdown = !showDropdown" @click.outside="showDropdown = false"
+                  class="p-1 hover:opacity-70 cursor-pointer">
+                  <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <div x-show="showDropdown" style="display: none;"
+                  class="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-slate-800 rounded-md shadow-xl border border-slate-100 dark:border-slate-700 z-20 text-sm overflow-hidden text-slate-800 dark:text-slate-200">
+                  <button
+                    class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors">Send
+                    transcript</button>
+                  <button @click="showContactForm = !showContactForm; showDropdown = false"
+                    class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors"
+                    x-text="showContactForm ? 'Back to Chat' : 'Contact Form'"></button>
+                </div>
+              </div>
+            </template>
+            <template x-if="settings.showMinimizeButton">
+              <button class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="minus" class="w-5 h-5"></i></button>
+            </template>
+          </nav>
+        </header>
+
+        <!-- Main Chat/Form Body -->
+        <div class="flex-1 overflow-y-auto p-4 chat-scroll relative" :style="{ background: getBackgroundStyle() }">
+          <!-- Chat View -->
+          <div x-show="!showContactForm" class="flex flex-col justify-end min-h-full">
+            <template x-for="(msg, index) in messages" :key="index">
+              <div class="flex mb-3" :class="msg.isUser ? 'justify-end' : 'justify-start'"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100">
+                <div class="max-w-[85%] break-words" :class="msg.isUser ? 'rounded-br-none' : 'rounded-bl-none'" :style="{
+                    backgroundColor: msg.isUser ? settings.userMsgBgColor : settings.botMsgBgColor,
+                    color: msg.isUser ? settings.userMsgTextColor : settings.botMsgTextColor,
+                    fontSize: settings.msgFontSize + 'px',
+                    borderRadius: settings.msgBorderRadius + 'px',
+                    padding: settings.msgPadding + 'px'
+                  }">
+                  <span x-text="msg.text"></span>
+                  <template x-if="settings.showTimestamp">
+                    <div class="text-[10px] opacity-60 mt-1" x-text="msg.time"></div>
+                  </template>
+                </div>
+              </div>
+            </template>
+
+            <!-- Typing Indicator -->
+            <template x-if="isTyping && settings.showTypingIndicator">
+              <div class="flex justify-start mb-2" x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0">
+                <div class="flex items-center gap-1.5 px-3 py-2"
+                  :style="{ backgroundColor: settings.typingIndicatorBgColor, borderRadius: settings.msgBorderRadius + 'px' }">
+                  <span class="w-1.5 h-1.5 rounded-full animate-bounce"
+                    :style="{ backgroundColor: settings.typingIndicatorColor, animationDelay: '0ms' }"></span>
+                  <span class="w-1.5 h-1.5 rounded-full animate-bounce"
+                    :style="{ backgroundColor: settings.typingIndicatorColor, animationDelay: '150ms' }"></span>
+                  <span class="w-1.5 h-1.5 rounded-full animate-bounce"
+                    :style="{ backgroundColor: settings.typingIndicatorColor, animationDelay: '300ms' }"></span>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <!-- Contact Form View -->
+          <div x-show="showContactForm" style="display: none;" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+            <div class="p-4"
+              :style="{ backgroundColor: settings.formBgColor, borderRadius: settings.formBorderRadius + 'px', border: `1px solid ${settings.formBorderColor}` }">
+
+              <div x-show="!isFormSubmitted" class="text-center mb-4">
+                <p class="text-lg font-bold pb-1" :style="{ color: settings.formTitleColor }"
+                  x-text="settings.formMessage1"></p>
+                <p class="text-xs" :style="{ color: settings.formMessageColor }" x-text="settings.formMessage2"></p>
+              </div>
+
+              <h3 x-show="!isFormSubmitted" class="text-sm font-bold mb-3" :style="{ color: settings.formTitleColor }"
+                x-text="settings.formTitle"></h3>
+
+              <form @submit.prevent="submitForm" class="space-y-3 relative">
+                <div x-show="!isFormSubmitted">
+                  <label class="block text-[11px] font-bold mb-1"
+                    :style="{ color: settings.formLabelColor }">Name:</label>
+                  <input type="text" x-model="formData.name" placeholder="Your Name"
+                    class="w-full px-3 py-2 text-sm outline-none"
+                    :style="{ backgroundColor: settings.formInputBgColor, border: `1px solid ${settings.formInputBorderColor}`, borderRadius: settings.formInputBorderRadius + 'px', color: settings.formLabelColor }">
+                  <p x-show="formErrors.name" class="text-rose-500 text-[10px] mt-1 font-bold" x-text="formErrors.name">
+                  </p>
+                </div>
+                <div x-show="!isFormSubmitted">
+                  <label class="block text-[11px] font-bold mb-1"
+                    :style="{ color: settings.formLabelColor }">Email:</label>
+                  <input type="email" x-model="formData.email" placeholder="Your Email"
+                    class="w-full px-3 py-2 text-sm outline-none"
+                    :style="{ backgroundColor: settings.formInputBgColor, border: `1px solid ${settings.formInputBorderColor}`, borderRadius: settings.formInputBorderRadius + 'px', color: settings.formLabelColor }">
+                  <p x-show="formErrors.email" class="text-rose-500 text-[10px] mt-1 font-bold"
+                    x-text="formErrors.email"></p>
+                </div>
+                <div x-show="!isFormSubmitted">
+                  <label class="block text-[11px] font-bold mb-1"
+                    :style="{ color: settings.formLabelColor }">Message:</label>
+                  <textarea x-model="formData.message" rows="3" placeholder="Your Message"
+                    class="w-full px-3 py-2 text-sm outline-none resize-none"
+                    :style="{ backgroundColor: settings.formInputBgColor, border: `1px solid ${settings.formInputBorderColor}`, borderRadius: settings.formInputBorderRadius + 'px', color: settings.formLabelColor }"></textarea>
+                  <p x-show="formErrors.message" class="text-rose-500 text-[10px] mt-1 font-bold"
+                    x-text="formErrors.message"></p>
+                </div>
+
+                <div class="mt-4 flex flex-col items-center justify-center relative h-10">
+                  <button type="submit"
+                    class="absolute text-sm font-bold flex items-center justify-center transition-all duration-500 overflow-hidden cursor-pointer"
+                    :class="isFormSubmitted ? 'pointer-events-none' : ''" :style="{
+                      backgroundColor: settings.submitBtnBgColor,
+                      color: settings.submitBtnFontColor,
+                      borderRadius: isFormSubmitted ? '50px' : settings.submitBtnBorderRadius + 'px',
+                      height: settings.submitBtnHeight + 'px',
+                      width: isFormSubmitted ? settings.submitBtnHeight + 'px' : '100%',
+                    }">
+                    <span x-show="!isFormSubmitted" x-text="settings.submitBtnText"></span>
+                    <i x-show="isFormSubmitted" data-lucide="check" class="w-5 h-5" style="display: none;"></i>
+                  </button>
+                </div>
+                <div x-show="isFormSubmitted" style="display: none;" class="text-center mt-2"
+                  x-transition:enter="transition delay-300 duration-300">
+                  <p class="text-sm font-bold" :style="{ color: settings.submitBtnBgColor }"
+                    x-text="settings.submitBtnSubmittedText"></p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Area (Hidden during contact form) -->
+        <div x-show="!showContactForm" class="p-3 border-t flex-shrink-0"
+          :style="{ backgroundColor: settings.headerBgColor, borderColor: 'rgba(0,0,0,0.1)' }">
+          <div class="flex items-center relative">
+            <input type="text" x-model="newMessage" @keydown.enter="sendMessage"
+              :placeholder="settings.inputPlaceholder" class="flex-1 outline-none w-full pr-[100px]" :style="{
+                backgroundColor: settings.inputBgColor,
+                color: settings.inputTextColor,
+                borderRadius: settings.inputBorderRadius + 'px',
+                height: settings.inputHeight + 'px',
+                fontSize: settings.inputFontSize + 'px',
+                paddingLeft: '12px',
+                border: `1px solid ${settings.inputBorderColor}`
+              }" />
+            <div class="absolute right-1.5 flex gap-1 items-center">
+              <template x-if="settings.showEmojiPicker">
+                <div class="relative">
+                  <button @click="showEmojiPicker = !showEmojiPicker" @click.outside="showEmojiPicker = false"
+                    class="p-1.5 hover:opacity-70 cursor-pointer" :style="{ color: settings.emojiButtonColor }">
+                    <i data-lucide="smile" class="w-4 h-4"></i>
+                  </button>
+                  <div x-show="showEmojiPicker" style="display: none;"
+                    class="absolute bottom-full right-0 mb-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 p-2 grid grid-cols-5 gap-1.5 z-20">
+                    <template x-for="emoji in emojis">
+                      <button @click="newMessage += emoji; showEmojiPicker = false"
+                        class="text-lg hover:bg-slate-100 dark:hover:bg-slate-700 rounded p-1 cursor-pointer"
+                        x-text="emoji"></button>
+                    </template>
+                  </div>
+                </div>
+              </template>
+              <template x-if="settings.showAttachButton">
+                <button class="p-1.5 hover:opacity-70 cursor-pointer" :style="{ color: settings.attachButtonColor }">
+                  <i data-lucide="paperclip" class="w-4 h-4"></i>
+                </button>
+              </template>
+              <button @click="sendMessage"
+                class="ml-1 rounded-md flex items-center justify-center transition-colors cursor-pointer"
+                :disabled="!newMessage.trim()" :style="{
+                  backgroundColor: newMessage.trim() ? settings.sendBtnBgColor : '#d1d5db',
+                  color: settings.sendBtnIconColor,
+                  borderRadius: settings.sendBtnBorderRadius + 'px',
+                  width: settings.sendBtnSize + 'px',
+                  height: settings.sendBtnSize + 'px',
+                  cursor: newMessage.trim() ? 'pointer' : 'not-allowed'
+                }">
+                <i data-lucide="send" class="w-4 h-4 ml-0.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <template x-if="settings.showFooter">
+          <div class="flex items-center justify-center text-[10px] font-medium border-t flex-shrink-0" :style="{
+              backgroundColor: settings.footerBgColor,
+              color: settings.footerTextColor,
+              height: settings.footerHeight + 'px',
+              borderColor: 'rgba(0,0,0,0.1)'
+            }" x-text="settings.footerText"></div>
+        </template>
+      </div>
+
+    </div>
+
+    <!-- Output CSS panel -->
+    <div class="glass-panel p-4 rounded-xl border border-slate-200/60 dark:border-slate-800/40">
+      <span class="text-3xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 block mb-2">CSS
+        Output Snippet</span>
+      <pre
+        class="bg-slate-950 text-indigo-300 dark:text-indigo-400/90 text-2xs p-3 rounded-lg overflow-x-auto max-h-32 border border-slate-900"><code x-text="`width: ${settings.widgetWidth}px;
+height: ${settings.widgetHeight}px;
+border-radius: ${settings.widgetBorderRadius}px;
+background: ${getBackgroundStyle()};
+box-shadow: ${settings.widgetShadow ? `0 0 ${settings.widgetShadowBlur}px ${settings.widgetShadowColor}` : 'none'};`"></code></pre>
+    </div>
+  </div>
+
+  <!-- RIGHT: REAL-TIME INTERACTIVE CONTROLLER (PLAYGROUND) -->
+  <div
+    class="glass-panel p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/40 flex flex-col h-[650px] z-10">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/60 mb-4">
+      <h3 class="text-sm font-bold font-outfit text-slate-800 dark:text-slate-100">Widget Tuner</h3>
+      <span
+        class="text-3xs bg-indigo-50 dark:bg-indigo-950/40 text-indigo-500 font-semibold px-2 py-0.5 rounded-full">Reactive
+        editor</span>
+    </div>
+
+    <!-- Playground Tabs -->
+    <div
+      class="flex gap-1 bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-900 p-1 rounded-lg text-2xs font-semibold mb-4 overflow-x-auto">
+      <button @click="editorTab = 'layout'"
+        :class="editorTab === 'layout' ? 'bg-white dark:bg-slate-900 shadow-xs text-indigo-500 font-bold' : 'text-slate-500 hover:text-slate-700'"
+        class="flex-1 py-1 px-1 rounded whitespace-nowrap transition-all">Layout</button>
+      <button @click="editorTab = 'header'"
+        :class="editorTab === 'header' ? 'bg-white dark:bg-slate-900 shadow-xs text-indigo-500 font-bold' : 'text-slate-500 hover:text-slate-700'"
+        class="flex-1 py-1 px-1 rounded whitespace-nowrap transition-all">Header</button>
+      <button @click="editorTab = 'chat'"
+        :class="editorTab === 'chat' ? 'bg-white dark:bg-slate-900 shadow-xs text-indigo-500 font-bold' : 'text-slate-500 hover:text-slate-700'"
+        class="flex-1 py-1 px-1 rounded whitespace-nowrap transition-all">Chat</button>
+      <button @click="editorTab = 'form'"
+        :class="editorTab === 'form' ? 'bg-white dark:bg-slate-900 shadow-xs text-indigo-500 font-bold' : 'text-slate-500 hover:text-slate-700'"
+        class="flex-1 py-1 px-1 rounded whitespace-nowrap transition-all">Form</button>
+    </div>
+
+    <!-- Settings Scroll Panel -->
+    <div class="flex-1 overflow-y-auto pr-1 space-y-4 text-xs">
+
+      <!-- Tab 1: Layout -->
+      <div x-show="editorTab === 'layout'" class="space-y-4" x-transition>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label
+              class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Width</label><input
+              type="number" x-model.number="settings.widgetWidth"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold text-center">
+          </div>
+          <div><label
+              class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Height</label><input
+              type="number" x-model.number="settings.widgetHeight"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold text-center">
+          </div>
+        </div>
+        <div>
+          <label
+            class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold flex justify-between"><span>Border
+              Radius</span><span x-text="settings.widgetBorderRadius + 'px'"></span></label>
+          <input type="range" min="0" max="40" x-model.number="settings.widgetBorderRadius"
+            class="w-full h-1 bg-slate-200 rounded-lg appearance-none accent-indigo-500">
+        </div>
+
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-3">
+          <label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Background Chat
+            Color</label>
+          <div class="flex items-center gap-2"><input type="color" x-model="settings.chatBgColor"
+              class="w-10 h-7 border-0 bg-transparent p-0 cursor-pointer"><input type="text"
+              x-model="settings.chatBgColor"
+              class="flex-1 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-mono">
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-3">
+          <div class="flex justify-between items-center">
+            <h4 class="text-3xs uppercase font-extrabold text-slate-400">Enable Shadow</h4><input type="checkbox"
+              x-model="settings.widgetShadow" class="rounded border-slate-300 text-indigo-600">
+          </div>
+          <template x-if="settings.widgetShadow">
+            <div class="grid grid-cols-2 gap-3 pl-3 border-l-2 border-indigo-500/30">
+              <div><label class="block text-3xs uppercase text-slate-500 mb-1">Blur</label><input type="number"
+                  x-model.number="settings.widgetShadowBlur"
+                  class="w-full px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+              </div>
+              <div><label class="block text-3xs uppercase text-slate-500 mb-1">Color</label><input type="color"
+                  x-model="settings.widgetShadowColor" class="w-full h-7 border-0 bg-transparent p-0 cursor-pointer">
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Tab 2: Header / Footer -->
+      <div x-show="editorTab === 'header'" class="space-y-4" x-transition style="display: none;">
+        <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Chat
+            Title</label><input type="text" x-model="settings.chatTitle"
+            class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold">
+        </div>
+        <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Logo
+            URL</label><input type="text" x-model="settings.logoUrl"
+            class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-medium">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-3xs uppercase text-slate-500 mb-1">Header Height</label><input type="number"
+              x-model.number="settings.headerHeight"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+          </div>
+          <div><label class="block text-3xs uppercase text-slate-500 mb-1">Header Bg</label><input type="color"
+              x-model="settings.headerBgColor" class="w-full h-8 border-0 bg-transparent p-0 cursor-pointer"></div>
+        </div>
+
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2">
+          <div class="flex justify-between items-center"><span class="text-xs font-semibold">Show Back
+              Button</span><input type="checkbox" x-model="settings.showBackButton"
+              class="rounded border-slate-300 text-indigo-600"></div>
+          <div class="flex justify-between items-center"><span class="text-xs font-semibold">Show Menu
+              Dropdown</span><input type="checkbox" x-model="settings.showMenuButton"
+              class="rounded border-slate-300 text-indigo-600"></div>
+          <div class="flex justify-between items-center"><span class="text-xs font-semibold">Show Minimize
+              Button</span><input type="checkbox" x-model="settings.showMinimizeButton"
+              class="rounded border-slate-300 text-indigo-600"></div>
+        </div>
+
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-3">
+          <div class="flex justify-between items-center">
+            <h4 class="text-3xs uppercase font-extrabold text-slate-400">Enable Footer</h4><input type="checkbox"
+              x-model="settings.showFooter" class="rounded border-slate-300 text-indigo-600">
+          </div>
+          <template x-if="settings.showFooter">
+            <div class="space-y-3 pl-3 border-l-2 border-indigo-500/30">
+              <input type="text" x-model="settings.footerText"
+                class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs">
+              <div class="flex gap-2 items-center">
+                <input type="color" x-model="settings.footerBgColor"
+                  class="w-6 h-6 border-0 bg-transparent p-0 cursor-pointer">
+                <span class="text-3xs uppercase text-slate-500">Bg Color</span>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Tab 3: Chat & Input -->
+      <div x-show="editorTab === 'chat'" class="space-y-4" x-transition style="display: none;">
+        <div class="grid grid-cols-2 gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div class="space-y-2">
+            <h4 class="text-3xs uppercase font-extrabold text-indigo-500">User Bubbles</h4>
+            <div><label class="text-3xs text-slate-500">Bg Color</label><input type="color"
+                x-model="settings.userMsgBgColor" class="w-full h-6 border-0 bg-transparent p-0 cursor-pointer"></div>
+            <div><label class="text-3xs text-slate-500">Text Color</label><input type="color"
+                x-model="settings.userMsgTextColor" class="w-full h-6 border-0 bg-transparent p-0 cursor-pointer"></div>
+          </div>
+          <div class="space-y-2">
+            <h4 class="text-3xs uppercase font-extrabold text-emerald-500">Bot Bubbles</h4>
+            <div><label class="text-3xs text-slate-500">Bg Color</label><input type="color"
+                x-model="settings.botMsgBgColor" class="w-full h-6 border-0 bg-transparent p-0 cursor-pointer"></div>
+            <div><label class="text-3xs text-slate-500">Text Color</label><input type="color"
+                x-model="settings.botMsgTextColor" class="w-full h-6 border-0 bg-transparent p-0 cursor-pointer"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-3xs uppercase text-slate-500 mb-1">Msg Radius</label><input type="number"
+              x-model.number="settings.msgBorderRadius"
+              class="w-full px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+          </div>
+          <div><label class="block text-3xs uppercase text-slate-500 mb-1">Msg Padding</label><input type="number"
+              x-model.number="settings.msgPadding"
+              class="w-full px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2">
+          <h4 class="text-3xs uppercase font-extrabold text-slate-400">Input Box styling</h4>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-3xs uppercase text-slate-500 mb-1">Height</label><input type="number"
+                x-model.number="settings.inputHeight"
+                class="w-full px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+            </div>
+            <div><label class="block text-3xs uppercase text-slate-500 mb-1">Radius</label><input type="number"
+                x-model.number="settings.inputBorderRadius"
+                class="w-full px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-center font-bold">
+            </div>
+          </div>
+          <div class="flex justify-between items-center mt-2"><span class="text-xs font-semibold">Enable Emoji
+              Picker</span><input type="checkbox" x-model="settings.showEmojiPicker"
+              class="rounded border-slate-300 text-indigo-600"></div>
+          <div class="flex justify-between items-center"><span class="text-xs font-semibold">Enable Attach
+              Icon</span><input type="checkbox" x-model="settings.showAttachButton"
+              class="rounded border-slate-300 text-indigo-600"></div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Form -->
+      <div x-show="editorTab === 'form'" class="space-y-4" x-transition style="display: none;">
+        <button @click="showContactForm = true"
+          class="w-full py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold rounded-lg mb-2 cursor-pointer border border-indigo-200 dark:border-indigo-800">Preview
+          Form Design</button>
+
+        <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Form
+            Title</label><input type="text" x-model="settings.formTitle"
+            class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold">
+        </div>
+        <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Description Line
+            1</label><input type="text" x-model="settings.formMessage1"
+            class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs">
+        </div>
+        <div><label class="block text-3xs uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">Description Line
+            2</label><input type="text" x-model="settings.formMessage2"
+            class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 border-t border-slate-100 dark:border-slate-800 pt-3">
+          <div><label class="block text-3xs uppercase text-slate-500 mb-1">Form Bg</label><input type="color"
+              x-model="settings.formBgColor" class="w-full h-7 border-0 bg-transparent p-0 cursor-pointer"></div>
+          <div><label class="block text-3xs uppercase text-slate-500 mb-1">Input Bg</label><input type="color"
+              x-model="settings.formInputBgColor" class="w-full h-7 border-0 bg-transparent p-0 cursor-pointer"></div>
+        </div>
+
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-3">
+          <h4 class="text-3xs uppercase font-extrabold text-slate-400">Submit Button</h4>
+          <div><input type="text" x-model="settings.submitBtnText"
+              class="w-full px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 font-bold text-xs mb-2"
+              placeholder="Button Text"></div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-3xs uppercase text-slate-500 mb-1">Button Bg</label><input type="color"
+                x-model="settings.submitBtnBgColor" class="w-full h-7 border-0 bg-transparent p-0 cursor-pointer"></div>
+            <div><label class="block text-3xs uppercase text-slate-500 mb-1">Text Color</label><input type="color"
+                x-model="settings.submitBtnFontColor" class="w-full h-7 border-0 bg-transparent p-0 cursor-pointer">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Logic -->
+<script>
+  window.chatwidgetPreviewController = function () {
+    let initialSettings = {};
+
+    // Safely parse JSON from script tag
+    try {
+      initialSettings = JSON.parse(document.getElementById('chatwidget-settings-data').textContent);
+    } catch (e) {
+      console.error("Failed to parse initial chat widget settings", e);
+    }
+
+    // Default settings mimicking standard state
+    const defaultSettings = {
+      widgetWidth: 350,
+      widgetHeight: 500,
+      widgetBorderRadius: 16,
+      widgetShadow: true,
+      widgetShadowBlur: 20,
+      widgetShadowColor: 'rgba(0,0,0,0.15)',
+      widgetBorderEnabled: true,
+      widgetBorderWidth: 1,
+      widgetBorderColor: '#e5e7eb',
+
+      headerHeight: 60,
+      headerBgColor: '#ffffff',
+      headerTextColor: '#111827',
+      logoUrl: 'https://cdn-icons-png.flaticon.com/512/4712/4712035.png',
+      chatTitle: 'Customer Support',
+      showBackButton: false,
+      showMenuButton: true,
+      showMinimizeButton: true,
+
+      chatBgColor: '#f9fafb',
+      chatBgGradientEnabled: false,
+
+      userMsgBgColor: '#4f46e5',
+      userMsgTextColor: '#ffffff',
+      botMsgBgColor: '#ffffff',
+      botMsgTextColor: '#1f2937',
+      msgFontSize: 14,
+      msgBorderRadius: 12,
+      msgPadding: 10,
+      showTimestamp: true,
+      showTypingIndicator: true,
+      typingIndicatorBgColor: '#ffffff',
+      typingIndicatorColor: '#9ca3af',
+
+      inputHeight: 48,
+      inputBgColor: '#ffffff',
+      inputTextColor: '#111827',
+      inputBorderColor: '#e5e7eb',
+      inputBorderRadius: 24,
+      inputFontSize: 14,
+      inputPlaceholder: 'Write a message...',
+
+      showEmojiPicker: true,
+      emojiButtonColor: '#9ca3af',
+      showAttachButton: true,
+      attachButtonColor: '#9ca3af',
+      sendBtnBgColor: '#4f46e5',
+      sendBtnIconColor: '#ffffff',
+      sendBtnBorderRadius: 8,
+      sendBtnSize: 32,
+
+      showFooter: true,
+      footerHeight: 30,
+      footerBgColor: '#ffffff',
+      footerTextColor: '#9ca3af',
+      footerText: 'Powered by Zotly',
+
+      formBgColor: '#ffffff',
+      formBorderRadius: 12,
+      formBorderColor: '#e5e7eb',
+      formTitleColor: '#111827',
+      formMessageColor: '#6b7280',
+      formMessage1: 'Leave a message',
+      formMessage2: 'We usually respond in a few hours.',
+      formTitle: 'Contact Us',
+      formLabelColor: '#374151',
+      formInputBgColor: '#f9fafb',
+      formInputBorderColor: '#d1d5db',
+      formInputBorderRadius: 8,
+
+      submitBtnBgColor: '#4f46e5',
+      submitBtnFontColor: '#ffffff',
+      submitBtnBorderRadius: 24,
+      submitBtnHeight: 40,
+      submitBtnText: 'Send Message',
+      submitBtnSubmittedText: 'Message Sent Successfully!',
+
+      scrollbarWidth: 6,
+      scrollbarTrackColor: 'transparent',
+      scrollbarThumbColor: 'rgba(0,0,0,0.15)',
+      ...initialSettings
+    };
+
+    const initialMessages = [
+      { text: 'Hi! How can I help you today?', isUser: false, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+      { text: 'I need help with my order', isUser: true, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+      { text: "I'd be happy to help! Can you provide your order number?", isUser: false, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+    ];
+
+    return {
+      settings: defaultSettings,
+      copied: false,
+      saved: false,
+      editorTab: 'layout',
+
+      // Chat state
+      messages: initialMessages,
+      newMessage: '',
+      isTyping: false,
+      showEmojiPicker: false,
+      showDropdown: false,
+      showContactForm: false,
+      isFormSubmitted: false,
+
+      // Form state
+      formData: { name: '', email: '', subject: '', message: '' },
+      formErrors: { name: '', email: '', subject: '', message: '' },
+      emojis: ['😊', '👍', '❤️', '😂', '😢', '😎', '🤔', '👋', '🎉', '💯'],
+
+      copySettings() {
+        navigator.clipboard.writeText(JSON.stringify(this.settings, null, 2));
+        this.copied = true;
+        setTimeout(() => this.copied = false, 2000);
+      },
+
+      downloadSettings() {
+        const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.settings, null, 2));
+        const a = document.createElement('a');
+        a.href = dataStr;
+        a.download = 'chatwidget-settings.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      },
+
+      saveSettings() {
+        this.saved = true;
+        setTimeout(() => this.saved = false, 2000);
+      },
+
+      getBackgroundStyle() {
+        if (!this.settings.chatBgGradientEnabled) return this.settings.chatBgColor;
+        const stops = (this.settings.chatBgGradientStops || []).map(s => `${s.color} ${s.pos}%`).join(', ');
+        switch (this.settings.chatBgGradientType) {
+          case 'linear': return `linear-gradient(${this.settings.chatBgGradientAngle}deg, ${stops})`;
+          case 'radial': return `radial-gradient(circle, ${stops})`;
+          case 'conic': return `conic-gradient(from ${this.settings.chatBgGradientAngle}deg, ${stops})`;
+          default: return this.settings.chatBgColor;
+        }
+      },
+
+      sendMessage() {
+        if (this.newMessage.trim()) {
+          this.messages.push({
+            text: this.newMessage.trim(),
+            isUser: true,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          });
+          this.newMessage = '';
+          this.isTyping = true;
+          this.scrollToBottom();
+
+          setTimeout(() => {
+            this.isTyping = false;
+            this.messages.push({
+              text: "Thanks! I'm checking that right now...",
+              isUser: false,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            this.scrollToBottom();
+          }, 2000);
+        }
+      },
+
+      scrollToBottom() {
+        this.$nextTick(() => {
+          const container = document.querySelector('.chat-scroll');
+          if (container) container.scrollTop = container.scrollHeight;
+        });
+      },
+
+      validateForm() {
+        let valid = true;
+        this.formErrors = { name: '', email: '', message: '' };
+
+        if (!this.formData.name.trim()) { this.formErrors.name = 'Name is required'; valid = false; }
+        if (!this.formData.email.trim()) {
+          this.formErrors.email = 'Email is required'; valid = false;
+        } else if (!/\\S+@\\S+\\.\\S+/.test(this.formData.email)) {
+          this.formErrors.email = 'Invalid email'; valid = false;
+        }
+        if (!this.formData.message.trim()) { this.formErrors.message = 'Message is required'; valid = false; }
+        return valid;
+      },
+
+      submitForm() {
+        if (this.validateForm()) {
+          this.isFormSubmitted = true;
+          setTimeout(() => {
+            this.showContactForm = false;
+            this.isFormSubmitted = false;
+            this.formData = { name: '', email: '', subject: '', message: '' };
+          }, 2000);
+        }
+      },
+
+      init() {
+        // Trigger lucide icon parsing when Alpine is ready
+        this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
+
+        // Re-trigger icon creation when toggling menus so nested icons render
+        this.$watch('showDropdown', () => this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }));
+        this.$watch('showContactForm', () => this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }));
+        this.$watch('isFormSubmitted', () => this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }));
+      }
+    };
+  };
+
+  if (window.Alpine) {
+    window.Alpine.data('chatwidgetPreviewController', window.chatwidgetPreviewController);
+  } else {
+    document.addEventListener('alpine:init', () => {
+      window.Alpine.data('chatwidgetPreviewController', window.chatwidgetPreviewController);
+    });
+  }
+</script>

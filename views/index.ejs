@@ -28,15 +28,6 @@
                   <span
                     class="text-3xs uppercase tracking-widest font-extrabold text-indigo-500 font-outfit">Demonstration
                     Panel</span>
-                  <h2 x-show="currentTab === 'dashboard'" x-transition
-                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1">Performance &
-                    Analytics</h2>
-                  <h2 x-show="currentTab === 'search'" x-transition
-                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
-                    style="display: none;">Interactive Directory</h2>
-                  <h2 x-show="currentTab === 'tasks'" x-transition
-                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
-                    style="display: none;">Reactive Task Manager</h2>
                   <h2 x-show="currentTab === 'bubble'" x-transition
                     class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
                     style="display: none;">Bubble Pixel Playground</h2>
@@ -46,12 +37,13 @@
                   <h2 x-show="currentTab === 'chatbar'" x-transition
                     class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
                     style="display: none;">Chatbar</h2>
+                  <h2 x-show="currentTab === 'chatcontact'" x-transition
+                    class="text-2xl font-black font-outfit text-slate-800 dark:text-slate-100 mt-1"
+                    style="display: none;">Chat Contact Widget Tuner</h2>
                 </div>
 
                 <!-- Views -->
-                <%- include('partials/dashboard') %>
-                  <%- include('partials/search') %>
-                    <%- include('partials/tasks') %>
+
 
                       <div x-show="currentTab === 'bubble'" x-transition:enter="transition ease-out duration-300"
                         x-transition:enter-start="opacity-0 translate-y-3"
@@ -74,15 +66,168 @@
                           !=='undefined' ? chatbarSettings : {} }) %>
                       </div>
 
+                      <div x-show="currentTab === 'chatcontact'" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-3"
+                        x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                        <%- include('../widgets/chatcontact/chatcontactPreview', { chatcontactSettings: typeof
+                          chatcontactSettings !=='undefined' ? chatcontactSettings : {} }) %>
+                      </div>
+
               </div>
             </main>
 
         </div>
 
         <!--------------------------------------------------------------------------------------------------------->
-        <!-- Floating Live ChatBar Widget (Integrated & Available in UI) -->
-        <div x-data="{ open: false, chatText: '' }"
+        <!-- Floating Live ChatBar & Chat Contact Widget (Integrated & Available in UI) -->
+        <div x-data="{ open: false, mode: 'chat', chatText: '', submitted: false }"
           class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 transition-all duration-300">
+
+          <!-- Live Chat Contact Widget Popup -->
+          <div x-show="open" x-transition:enter="transition ease-out duration-250"
+            x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+            x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+            class="overflow-hidden shadow-2xl flex flex-col transition-all duration-200" :style="{
+              width: (typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.widgetWidth : 370) + 'px',
+              height: (typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.widgetHeight : 620) + 'px',
+              maxHeight: '75vh',
+              borderRadius: (typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.widgetBorderRadius : 12) + 'px',
+              border: typeof chatcontactSettings !== 'undefined' && chatcontactSettings.widgetBorderEnabled ? `${chatcontactSettings.widgetBorderWidth}px solid ${chatcontactSettings.widgetBorderColor}` : '1px solid #e5e7eb',
+              backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.chatBgColor : '#ffffff'
+            }" style="display: none;">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-4 shrink-0 shadow-xs select-none" :style="{
+                height: (typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.headerHeight : 56) + 'px',
+                backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.headerBgColor : '#ffffff',
+                color: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.headerTextColor : '#1f2937'
+              }">
+              <div class="flex items-center gap-2.5">
+                <button x-show="mode === 'form'" @click="mode = 'chat'"
+                  class="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer text-xs font-bold">
+                  ← Back
+                </button>
+                <div
+                  class="w-7 h-7 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-3xs">
+                  SC</div>
+                <span class="font-bold text-sm tracking-wide"
+                  x-text="typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.chatTitle : 'Support Chat'"></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button @click="mode = mode === 'chat' ? 'form' : 'chat'"
+                  class="px-2 py-1 rounded text-2xs font-bold border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer">
+                  <span x-text="mode === 'chat' ? 'Contact Form' : 'Chat'"></span>
+                </button>
+                <button @click="open = false"
+                  class="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Chat View Body -->
+            <div x-show="mode === 'chat'" class="flex-1 overflow-y-auto flex flex-col justify-between p-3.5 space-y-3">
+              <div class="flex flex-col gap-3">
+                <div class="flex flex-col items-start gap-1 max-w-[85%]">
+                  <div class="shadow-xs leading-relaxed p-3 rounded-2xl rounded-tl-sm text-xs" :style="{
+                      backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.botMsgBgColor : '#f3f4f6',
+                      color: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.botMsgTextColor : '#1f2937'
+                    }">
+                    Hi there! 👋 How can we help you with our HTMX and Alpine.js dashboard today?
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Form Body -->
+            <div x-show="mode === 'form'" class="flex-1 overflow-y-auto p-4 flex flex-col justify-center"
+              style="display: none;">
+              <div class="p-4 border shadow-xs rounded-xl space-y-3.5" :style="{
+                  backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formBgColor : '#ffffff',
+                  borderColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formBorderColor : '#000000'
+                }">
+                <div class="space-y-1">
+                  <h4 class="font-extrabold text-sm"
+                    :style="{ color: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formTitleColor : '#1f2937' }"
+                    x-text="typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formTitle : 'Contact Us'">
+                  </h4>
+                  <p class="text-3xs leading-relaxed"
+                    :style="{ color: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formMessageColor : '#6b7280' }"
+                    x-text="typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formMessage1 : 'Please fill in the form we will reach out'">
+                  </p>
+                </div>
+                <div class="space-y-2.5 text-xs">
+                  <div>
+                    <input type="text" placeholder="Full Name"
+                      class="w-full px-2.5 py-1.5 text-xs border outline-none rounded-lg"
+                      :style="{ backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formInputBgColor : '#ffffff', borderColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formInputBorderColor : '#d1d5db' }" />
+                  </div>
+                  <div>
+                    <input type="email" placeholder="Email Address"
+                      class="w-full px-2.5 py-1.5 text-xs border outline-none rounded-lg"
+                      :style="{ backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formInputBgColor : '#ffffff', borderColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formInputBorderColor : '#d1d5db' }" />
+                  </div>
+                  <div>
+                    <textarea rows="2" placeholder="How can we assist?"
+                      class="w-full px-2.5 py-1.5 text-xs border outline-none rounded-lg resize-none"
+                      :style="{ backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formInputBgColor : '#ffffff', borderColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.formInputBorderColor : '#d1d5db' }"></textarea>
+                  </div>
+                </div>
+                <button @click="submitted = true; setTimeout(() => submitted = false, 2500)"
+                  class="w-full font-bold text-xs py-2 rounded-full text-white shadow-xs transition-transform active:scale-95 cursor-pointer flex items-center justify-center"
+                  :style="{
+                    backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.submitBtnBgColor : '#3b82f6',
+                    color: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.submitBtnFontColor : '#ffffff'
+                  }">
+                  <span
+                    x-text="submitted ? (typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.submitBtnSubmittedText : 'Submitted!') : (typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.submitBtnText : 'Submit')"></span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Chat Input Bar -->
+            <div x-show="mode === 'chat'"
+              class="p-3 shrink-0 flex items-center gap-2 border-t border-black/5 dark:border-white/5"
+              :style="{ backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.inputBgColor : '#ffffff' }">
+              <input type="text" x-model="chatText" @keyup.enter="if(chatText.trim()){ chatText=''; }"
+                :placeholder="typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.inputPlaceholder : 'Type a message...'"
+                class="flex-1 px-3 py-1.5 border outline-none text-xs rounded-lg" :style="{
+                  backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.inputBgColor : '#ffffff',
+                  borderColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.inputBorderColor : '#d1d5db',
+                  color: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.inputTextColor : '#1f2937'
+                }" />
+              <button @click="if(chatText.trim()){ chatText=''; }"
+                class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm transition-transform active:scale-95 cursor-pointer text-white"
+                :style="{
+                  backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.sendBtnBgColor : '#000000',
+                  color: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.sendBtnIconColor : '#ffffff'
+                }">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m22 2-7 20-4-9-9-4Z" />
+                  <path d="M22 2 11 13" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Footer -->
+            <div
+              class="shrink-0 flex items-center justify-center border-t border-black/5 dark:border-white/5 py-1.5 text-3xs font-medium tracking-wider uppercase select-none"
+              :style="{
+                backgroundColor: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.footerBgColor : '#f9fafb',
+                color: typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.footerTextColor : '#6b7280'
+              }">
+              <span
+                x-text="typeof chatcontactSettings !== 'undefined' ? chatcontactSettings.footerText : 'Powered by ChatWidget'"></span>
+            </div>
+          </div>
+
           <!-- Live ChatBar Trigger Button using exact JSON CSS & Settings -->
           <div @click="open = !open"
             class="chat-bar-widget flex items-center justify-between transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] cursor-pointer group shadow-lg"
@@ -148,7 +293,7 @@
 
         // Dashboard View Controller
         Alpine.data('dashboardController', () => ({
-          currentTab: 'dashboard',
+          currentTab: 'bubble',
           setTab(tab) {
             this.currentTab = tab;
             Alpine.store('sidebar').mobileOpen = false;

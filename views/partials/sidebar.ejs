@@ -28,83 +28,7 @@
 
     <!-- Navigation Links -->
     <nav class="space-y-1">
-      <!-- Dashboard Tab Button -->
-      <button 
-        @click="setTab('dashboard')"
-        :class="[
-          currentTab === 'dashboard' 
-            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
-            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent',
-          !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
-        ]"
-        data-tooltip="Live Monitor"
-        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
-        </svg>
-        <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Live Monitor</span>
-      </button>
-
-      <!-- Active Search Tab Button -->
-      <button 
-        @click="setTab('search')"
-        :class="[
-          currentTab === 'search' 
-            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
-            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent',
-          !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
-        ]"
-        data-tooltip="Active Search"
-        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
-          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.637 10.637Z" />
-        </svg>
-        <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Active Search</span>
-      </button>
-
-      <!-- Tasks Tab Button -->
-      <button 
-        @click="setTab('tasks')"
-        :class="[
-          currentTab === 'tasks' 
-            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
-            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent',
-          !$store.sidebar.expanded ? 'tooltip md:justify-center' : 'justify-between'
-        ]"
-        data-tooltip="Task Manager"
-        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
-      >
-        <div class="flex items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.03 0 1.9.693 2.166 1.638m-7.377 0A48.536 48.536 0 0 1 12 3c1.2 0 2.392.049 3.57.145m-3.57.145a48.954 48.954 0 0 0-4.177.527M3.75 7.68h16.5m-16.5 0a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 3.75 22.5h16.5a2.25 2.25 0 0 0 2.25-2.25V9.93a2.25 2.25 0 0 0-2.25-2.25M3.75 7.68v-.08a2.25 2.25 0 0 1 2.25-2.25h12a2.25 2.25 0 0 1 2.25 2.25v.08" />
-          </svg>
-          <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Tasks</span>
-        </div>
-        <span id="task-counter" class="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-xs font-semibold px-2 py-0.5 rounded-full shrink-0">
-          --
-        </span>
-      </button>
-
       <!-- Bubble Widget Tab Button -->
-      <button 
-        @click="setTab('bubble')"
-        :class="[
-          currentTab === 'bubble' 
-            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
-            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent',
-          !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
-        ]"
-        data-tooltip="Bubble Tuner"
-        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.904-4.813L21 9l-3-3L9.813 15.904Z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 9.5 17.5 12" />
-        </svg>
-        <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Bubble Tuner</span>
-      </button>
 
       <!-- Eyecatcher Widget Tab Button -->
       <button 
@@ -141,6 +65,24 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
         </svg>
         <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">ChatBar Tuner</span>
+      </button>
+
+      <!-- Chat Contact Widget Tab Button -->
+      <button 
+        @click="setTab('chatcontact')"
+        :class="[
+          currentTab === 'chatcontact' 
+            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-2 border-indigo-500 font-semibold' 
+            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40 border-l-2 border-transparent',
+          !$store.sidebar.expanded ? 'tooltip md:justify-center' : ''
+        ]"
+        data-tooltip="Chat Contact Tuner"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-sm transition-all duration-150 cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+        </svg>
+        <span x-show="$store.sidebar.expanded" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Chat Contact Tuner</span>
       </button>
     </nav>
   </div>

@@ -45,6 +45,15 @@ try {
   console.error('Error loading chatbar settings:', err);
 }
 
+// Load Chat Contact widget settings
+let chatcontactSettings = {};
+try {
+  const rawSettings = fs.readFileSync(path.join(__dirname, 'widgets', 'chatcontact', 'settings.json'), 'utf-8');
+  chatcontactSettings = JSON.parse(rawSettings);
+} catch (err) {
+  console.error('Error loading chatcontact settings:', err);
+}
+
 // In-memory databases
 let tasks = [
   { id: 1, text: 'Master HTMX out-of-band swaps', completed: true },
@@ -86,7 +95,8 @@ app.get('/', (req, res) => {
   res.render('index', {
     bubbleSettings: bubbleSettings,
     eyecatcherSettings: eyecatcherSettings,
-    chatbarSettings: chatbarSettings 
+    chatbarSettings: chatbarSettings,
+    chatcontactSettings: chatcontactSettings
   });
 });
 
