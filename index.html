@@ -4,32 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zotly Dashboard - HTMX & Alpine.js Showcase</title>
-  
-  <!-- Tailwind CSS v4 Browser Compiler CDN -->
-  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-  
   <!-- HTMX v2 CDN -->
   <script src="https://unpkg.com/htmx.org@2.0.0"></script>
   
   <!-- Alpine.js v3 CDN (defer is recommended) -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Custom Styles (HTMX indicators, fonts, fine-tuning) -->
+  <!-- Production Compiled Tailwind & Custom Styles -->
   <link rel="stylesheet" href="public/style.css">
-  
-  <!-- Tailwind v4 Custom Theme & Utilities via browser compiler -->
-  <style type="text/tailwindcss">
-    @import "tailwindcss";
-    @custom-variant dark (&:where(.dark, .dark *));
-
-    @theme {
-      --font-inter: 'Inter', sans-serif;
-      --font-outfit: 'Outfit', sans-serif;
-    }
-  </style>
 </head>
 
 <body class="antialiased">
@@ -352,14 +335,13 @@
                 </div>
                 <nav class="flex gap-1.5 items-center">
                   <template x-if="settings.showBackButton">
-                    <button class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="chevron-left"
-                        class="w-5 h-5"></i></button>
+                    <button class="p-1 hover:opacity-70 cursor-pointer"><svg class="w-5 h-5"><use href="#icon-chevron-left"/></svg></button>
                   </template>
                   <template x-if="settings.showMenuButton">
                     <div class="relative">
                       <button @click="showDropdown = !showDropdown" @click.outside="showDropdown = false"
                         class="p-1 hover:opacity-70 cursor-pointer">
-                        <i data-lucide="menu" class="w-5 h-5"></i>
+                        <svg class="w-5 h-5"><use href="#icon-menu"/></svg>
                       </button>
                       <div x-show="showDropdown" style="display: none;"
                         class="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-slate-800 rounded-md shadow-xl border border-slate-100 dark:border-slate-700 z-20 text-sm overflow-hidden text-slate-800 dark:text-slate-200">
@@ -471,7 +453,7 @@
                             width: isFormSubmitted ? '32px' : '100%',
                           }">
                           <span x-show="!isFormSubmitted" x-text="settings.submitBtnText"></span>
-                          <i x-show="isFormSubmitted" data-lucide="check" class="w-4 h-4" style="display: none;"></i>
+                          <svg x-show="isFormSubmitted" class="w-4 h-4" style="display: none;"><use href="#icon-check"/></svg>
                         </button>
                       </div>
                       <div x-show="isFormSubmitted" style="display: none;" class="text-center mt-2"
@@ -502,10 +484,10 @@
                       <div class="relative">
                         <button @click="showEmojiPicker = !showEmojiPicker" @click.outside="showEmojiPicker = false"
                           class="p-1 hover:opacity-70 cursor-pointer" :style="{ color: settings.emojiButtonColor }">
-                          <i data-lucide="smile" class="w-4 h-4"></i>
+                          <svg class="w-4 h-4"><use href="#icon-smile"/></svg>
                         </button>
                         <div x-show="showEmojiPicker" style="display: none;"
-                          class="absolute bottom-full right-0 mb-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 p-2 grid grid-cols-5 gap-1 z-20">
+                          class="absolute bottom-full right-0 mb-2 w-36 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 p-2 grid grid-cols-5 gap-1 z-20">
                           <template x-for="emoji in emojis">
                             <button @click="newMessage += emoji; showEmojiPicker = false"
                               class="text-sm hover:bg-slate-100 dark:hover:bg-slate-700 rounded p-0.5 cursor-pointer"
@@ -516,7 +498,7 @@
                     </template>
                     <template x-if="settings.showAttachButton">
                       <button class="p-1 hover:opacity-70 cursor-pointer" :style="{ color: settings.attachButtonColor }">
-                        <i data-lucide="paperclip" class="w-4 h-4"></i>
+                        <svg class="w-4 h-4"><use href="#icon-paperclip"/></svg>
                       </button>
                     </template>
                     <button @click="sendMessage"
@@ -529,7 +511,7 @@
                         height: '28px',
                         cursor: newMessage.trim() ? 'pointer' : 'not-allowed'
                       }">
-                      <i data-lucide="send" class="w-3.5 h-3.5 ml-0.5"></i>
+                      <svg class="w-3.5 h-3.5 ml-0.5"><use href="#icon-send"/></svg>
                     </button>
                   </div>
                 </div>
@@ -583,7 +565,9 @@
 
               <template x-if="settings.backgroundOverlayType === 'lucide' && settings.backgroundLucideIcon">
                 <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center" :style="{ opacity: settings.backgroundLucideOpacity, mixBlendMode: settings.backgroundBlendMode }">
-                  <i :data-lucide="settings.backgroundLucideIcon.toLowerCase()" :style="{ width: settings.backgroundLucideSize + 'px', height: settings.backgroundLucideSize + 'px', color: settings.backgroundLucideColor }"></i>
+                  <svg :style="{ width: settings.backgroundLucideSize + 'px', height: settings.backgroundLucideSize + 'px', color: settings.backgroundLucideColor }">
+                    <use :href="'#icon-' + settings.backgroundLucideIcon.toLowerCase()"/>
+                  </svg>
                 </div>
               </template>
 
@@ -636,7 +620,9 @@
                   </template>
                   <template x-if="settings.backgroundOverlayType === 'lucide' && settings.backgroundLucideIcon">
                     <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center" :style="{ opacity: settings.backgroundLucideOpacity, mixBlendMode: settings.backgroundBlendMode }">
-                      <i :data-lucide="settings.backgroundLucideIcon.toLowerCase()" :style="{ width: settings.backgroundLucideSize + 'px', height: settings.backgroundLucideSize + 'px', color: settings.backgroundLucideColor }"></i>
+                      <svg :style="{ width: settings.backgroundLucideSize + 'px', height: settings.backgroundLucideSize + 'px', color: settings.backgroundLucideColor }">
+                        <use :href="'#icon-' + settings.backgroundLucideIcon.toLowerCase()"/>
+                      </svg>
                     </div>
                   </template>
                   <template x-if="settings.dots && hovered">
@@ -717,7 +703,9 @@
                   <span class="inline-block" :style="{ fontSize: settings.textSize + 'px', letterSpacing: settings.letterSpacing + 'px' }" x-text="settings.text || 'Chat with us'"></span>
                   <div class="flex items-center justify-center">
                     <template x-if="settings.iconType === 'lucide' && settings.lucideIcon">
-                      <i :data-lucide="toKebabCase(settings.lucideIcon)" :style="{ color: settings.iconColor, width: settings.iconWidth + 'px', height: settings.iconHeight + 'px', opacity: hovered ? 1 : 0.8 }"></i>
+                      <svg :style="{ color: settings.iconColor, width: settings.iconWidth + 'px', height: settings.iconHeight + 'px', opacity: hovered ? 1 : 0.8 }">
+                        <use :href="'#icon-' + toKebabCase(settings.lucideIcon)"/>
+                      </svg>
                     </template>
                     <template x-if="settings.iconType === 'image' && settings.iconImageUrl">
                       <img :src="settings.iconImageUrl" alt="icon" class="rounded" :style="{ objectFit: settings.iconFit, opacity: settings.iconOpacity, width: settings.iconWidth + 'px', height: settings.iconHeight + 'px', mixBlendMode: settings.iconBlend }" />
@@ -742,17 +730,17 @@
                       <span class="text-sm font-semibold" x-text="settings.chatTitle"></span>
                     </div>
                     <nav class="flex gap-1.5 items-center">
-                      <template x-if="settings.showBackButton"><button class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="chevron-left" class="w-5 h-5"></i></button></template>
+                      <template x-if="settings.showBackButton"><button class="p-1 hover:opacity-70 cursor-pointer"><svg class="w-5 h-5"><use href="#icon-chevron-left"/></svg></button></template>
                       <template x-if="settings.showMenuButton">
                         <div class="relative">
-                          <button @click="showDropdown = !showDropdown" @click.outside="showDropdown = false" class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="menu" class="w-5 h-5"></i></button>
+                          <button @click="showDropdown = !showDropdown" @click.outside="showDropdown = false" class="p-1 hover:opacity-70 cursor-pointer"><svg class="w-5 h-5"><use href="#icon-menu"/></svg></button>
                           <div x-show="showDropdown" style="display: none;" class="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-slate-800 rounded-md shadow-xl border border-slate-100 dark:border-slate-700 z-20 text-sm overflow-hidden text-slate-800 dark:text-slate-200">
                             <button class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors">Send transcript</button>
                             <button @click="showContactForm = !showContactForm; showDropdown = false" class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors" x-text="showContactForm ? 'Back to Chat' : 'Contact Form'"></button>
                           </div>
                         </div>
                       </template>
-                      <template x-if="settings.showMinimizeButton"><button class="p-1 hover:opacity-70 cursor-pointer"><i data-lucide="minus" class="w-5 h-5"></i></button></template>
+                      <template x-if="settings.showMinimizeButton"><button class="p-1 hover:opacity-70 cursor-pointer"><svg class="w-5 h-5"><use href="#icon-minus"/></svg></button></template>
                     </nav>
                   </header>
                   <div class="flex-1 overflow-y-auto p-4 chat-scroll relative" :style="{ background: getBackgroundStyle() }">
@@ -801,7 +789,7 @@
                           <div class="mt-4 flex flex-col items-center justify-center relative h-10">
                             <button type="submit" class="absolute text-sm font-bold flex items-center justify-center transition-all duration-500 overflow-hidden cursor-pointer" :class="isFormSubmitted ? 'pointer-events-none' : ''" :style="{ backgroundColor: settings.submitBtnBgColor, color: settings.submitBtnFontColor, borderRadius: isFormSubmitted ? '50px' : settings.submitBtnBorderRadius + 'px', height: settings.submitBtnHeight + 'px', width: isFormSubmitted ? settings.submitBtnHeight + 'px' : '100%' }">
                               <span x-show="!isFormSubmitted" x-text="settings.submitBtnText"></span>
-                              <i x-show="isFormSubmitted" data-lucide="check" class="w-5 h-5" style="display: none;"></i>
+                              <svg x-show="isFormSubmitted" class="w-5 h-5" style="display: none;"><use href="#icon-check"/></svg>
                             </button>
                           </div>
                           <div x-show="isFormSubmitted" style="display: none;" class="text-center mt-2" x-transition:enter="transition delay-300 duration-300">
@@ -817,14 +805,14 @@
                       <div class="absolute right-1.5 flex gap-1 items-center">
                         <template x-if="settings.showEmojiPicker">
                           <div class="relative">
-                            <button @click="showEmojiPicker = !showEmojiPicker" @click.outside="showEmojiPicker = false" class="p-1.5 hover:opacity-70 cursor-pointer" :style="{ color: settings.emojiButtonColor }"><i data-lucide="smile" class="w-4 h-4"></i></button>
-                            <div x-show="showEmojiPicker" style="display: none;" class="absolute bottom-full right-0 mb-2 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 p-2 grid grid-cols-5 gap-1.5 z-20">
+                            <button @click="showEmojiPicker = !showEmojiPicker" @click.outside="showEmojiPicker = false" class="p-1.5 hover:opacity-70 cursor-pointer" :style="{ color: settings.emojiButtonColor }"><svg class="w-4 h-4"><use href="#icon-smile"/></svg></button>
+                            <div x-show="showEmojiPicker" style="display: none;" class="absolute bottom-full right-0 mb-2 w-40 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 p-2 grid grid-cols-5 gap-1.5 z-20">
                               <template x-for="emoji in emojis"><button @click="newMessage += emoji; showEmojiPicker = false" class="text-lg hover:bg-slate-100 dark:hover:bg-slate-700 rounded p-1 cursor-pointer" x-text="emoji"></button></template>
                             </div>
                           </div>
                         </template>
-                        <template x-if="settings.showAttachButton"><button class="p-1.5 hover:opacity-70 cursor-pointer" :style="{ color: settings.attachButtonColor }"><i data-lucide="paperclip" class="w-4 h-4"></i></button></template>
-                        <button @click="sendMessage" class="ml-1 rounded-md flex items-center justify-center transition-colors cursor-pointer" :disabled="!newMessage.trim()" :style="{ backgroundColor: newMessage.trim() ? settings.sendBtnBgColor : '#d1d5db', color: settings.sendBtnIconColor, borderRadius: settings.sendBtnBorderRadius + 'px', width: settings.sendBtnSize + 'px', height: settings.sendBtnSize + 'px' }"><i data-lucide="send" class="w-4 h-4 ml-0.5"></i></button>
+                        <template x-if="settings.showAttachButton"><button class="p-1.5 hover:opacity-70 cursor-pointer" :style="{ color: settings.attachButtonColor }"><svg class="w-4 h-4"><use href="#icon-paperclip"/></svg></button></template>
+                        <button @click="sendMessage" class="ml-1 rounded-md flex items-center justify-center transition-colors cursor-pointer" :disabled="!newMessage.trim()" :style="{ backgroundColor: newMessage.trim() ? settings.sendBtnBgColor : '#d1d5db', color: settings.sendBtnIconColor, borderRadius: settings.sendBtnBorderRadius + 'px', width: settings.sendBtnSize + 'px', height: settings.sendBtnSize + 'px' }"><svg class="w-4 h-4 ml-0.5"><use href="#icon-send"/></svg></button>
                       </div>
                     </div>
                   </div>
@@ -859,7 +847,9 @@
                         class="p-1 hover:opacity-70 transition-opacity cursor-pointer"
                         :style="{ color: settings.closeIconColor }"
                       >
-                        <i :data-lucide="'x'" :style="{ width: settings.closeButtonSize + 'px', height: settings.closeButtonSize + 'px' }"></i>
+                        <svg :style="{ width: settings.closeButtonSize + 'px', height: settings.closeButtonSize + 'px' }">
+                          <use href="#icon-x"/>
+                        </svg>
                       </button>
                     </div>
                   </template>
@@ -1209,13 +1199,6 @@
         },
 
         init() {
-          this.$watch('settings.backgroundLucideIcon', () => {
-            this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
-          });
-          this.$watch('settings.backgroundOverlayType', () => {
-            this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
-          });
-          this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
         }
       };
     };
@@ -1303,13 +1286,6 @@
         },
 
         init() {
-          this.$watch('settings.lucideIcon', () => {
-            this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
-          });
-          this.$watch('settings.iconType', () => {
-            this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
-          });
-          this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
         }
       };
     };
@@ -1409,10 +1385,6 @@
         },
 
         init() {
-          this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
-          this.$watch('showDropdown', () => this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }));
-          this.$watch('showContactForm', () => this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }));
-          this.$watch('isFormSubmitted', () => this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }));
         }
       };
     };
@@ -1466,7 +1438,6 @@
           return `${buttonBorderWidth}px solid ${buttonBorderColor}`;
         },
         init() {
-          this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
         }
       };
     };
@@ -1643,9 +1614,6 @@
           })
           .then(data => {
             Object.assign(Alpine.store(cfg.key), data);
-            
-            // Re-trigger icon parsing once settings are applied
-            setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 50);
           })
           .catch(err => {
             console.error(`Error loading JSON config for ${cfg.key}:`, err);
@@ -1656,6 +1624,39 @@
       });
     });
   </script>
+  <!-- Hidden SVG Sprite Sheet for Optimized Lucide Icons -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="icon-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m15 18-6-6 6-6"/>
+    </symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>
+    </symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 6 9 17l-5-5"/>
+    </symbol>
+    <symbol id="icon-smile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
+    </symbol>
+    <symbol id="icon-paperclip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+    </symbol>
+    <symbol id="icon-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+    </symbol>
+    <symbol id="icon-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="5" x2="19" y1="12" y2="12"/>
+    </symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+    </symbol>
+    <symbol id="icon-message-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+    </symbol>
+  </svg>
 
 </body>
 </html>
