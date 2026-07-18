@@ -287,7 +287,7 @@
             x-data="{ openContactWidget: false, mode: 'chat', chatText: '', submitted: false }"
             @toggle-contact-widget.stop="openContactWidget = !openContactWidget"
             @close-contact-widget.stop="openContactWidget = false"
-            class="relative w-full h-[620px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between"
+            class="relative w-full h-[620px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between isolate"
             style="display: none;"
           >
             <!-- Top Navbar -->
@@ -330,7 +330,8 @@
               :style="{
                 width: settings.widgetWidth + 'px',
                 height: settings.widgetHeight + 'px',
-                maxHeight: 'calc(100% - 100px)',
+                'max-width': 'calc(100% - 48px)',
+                'max-height': 'calc(100% - 160px)',
                 boxShadow: settings.widgetShadow ? `0 0 ${settings.widgetShadowBlur}px ${settings.widgetShadowColor}` : 'none',
                 border: settings.widgetBorderEnabled ? `${settings.widgetBorderWidth}px solid ${settings.widgetBorderColor}` : 'none',
                 borderRadius: `${settings.widgetBorderRadius}px`
@@ -733,8 +734,8 @@
             x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
             
             <div x-data='chatwidgetPreviewController()' class="flex flex-col items-center justify-center gap-6 max-w-2xl mx-auto">
-              <div class="w-full flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 min-h-[550px] relative transition-all duration-300 shadow-xs">
-                <div class="flex flex-col relative overflow-hidden bg-white dark:bg-neutral-800 transition-all duration-200" :style="{ width: settings.widgetWidth + 'px', height: settings.widgetHeight + 'px', boxShadow: settings.widgetShadow ? `0 0 ${settings.widgetShadowBlur}px ${settings.widgetShadowColor}` : 'none', border: settings.widgetBorderEnabled ? `${settings.widgetBorderWidth}px solid ${settings.widgetBorderColor}` : 'none', borderRadius: `${settings.widgetBorderRadius}px` }">
+              <div class="w-full h-[620px] flex items-center justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-10 relative transition-all duration-300 shadow-xs">
+                <div class="flex flex-col relative overflow-hidden bg-white dark:bg-neutral-800 transition-all duration-200" :style="{ width: settings.widgetWidth + 'px', height: settings.widgetHeight + 'px', 'max-width': '100%', 'max-height': '100%', boxShadow: settings.widgetShadow ? `0 0 ${settings.widgetShadowBlur}px ${settings.widgetShadowColor}` : 'none', border: settings.widgetBorderEnabled ? `${settings.widgetBorderWidth}px solid ${settings.widgetBorderColor}` : 'none', borderRadius: `${settings.widgetBorderRadius}px` }">
                   <header class="flex justify-between items-center px-4 border-b flex-shrink-0" :style="{ height: settings.headerHeight + 'px', backgroundColor: settings.headerBgColor, color: settings.headerTextColor, borderColor: 'rgba(0,0,0,0.1)' }">
                     <div class="flex items-center gap-2">
                       <img :src="settings.logoUrl || 'https://via.placeholder.com/32'" alt="Logo" class="w-8 h-8 rounded-full object-cover bg-white" />
