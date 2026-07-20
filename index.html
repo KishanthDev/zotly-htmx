@@ -325,7 +325,7 @@
               class="absolute bottom-6 right-6 z-30 flex flex-col transition-all duration-300 pointer-events-auto"
               :style="{
                 width: $store.chat.isExpanded ? ($store.chatcontactv2.expandedWidth ? $store.chatcontactv2.expandedWidth + 'px' : '480px') : ($store.chatcontactv2.widgetWidth ? $store.chatcontactv2.widgetWidth + 'px' : '350px'),
-                height: $store.chat.isExpanded ? ($store.chatcontactv2.expandedHeight ? $store.chatcontactv2.expandedHeight + 'px' : '580px') : ($store.chatcontactv2.widgetHeight ? $store.chatcontactv2.widgetHeight + 'px' : '550px'),
+                height: $store.chatcontactv2.widgetHeight ? $store.chatcontactv2.widgetHeight + 'px' : '550px',
                 maxWidth: 'calc(100% - 48px)',
                 maxHeight: 'calc(100% - 104px)',
                 position: 'absolute',
