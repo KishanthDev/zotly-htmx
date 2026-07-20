@@ -25,10 +25,10 @@
     const bodyStyle = getComputedStyle(document.body);
 
     let primary = rootStyle.getPropertyValue('--primary-color').trim() ||
-                  bodyStyle.getPropertyValue('--primary-color').trim();
+      bodyStyle.getPropertyValue('--primary-color').trim();
 
     let secondary = rootStyle.getPropertyValue('--secondary-color').trim() ||
-                    bodyStyle.getPropertyValue('--secondary-color').trim();
+      bodyStyle.getPropertyValue('--secondary-color').trim();
 
     // Fallback: check script attribute if defined
     const scriptTag = document.currentScript || document.querySelector('script[src*="widget.js"]');
@@ -330,7 +330,7 @@
       </div>
     </div>
 
-    <!-- Floating Bubble Widget Trigger -->
+ <!-- Floating Bubble Widget Trigger -->
     <div x-show="!openContactWidget" x-data='window.previewBubbleController(Alpine.store("bubble"))'
       @click="$dispatch('toggle-contact-widget')"
       class="fixed bottom-6 right-6 z-40 flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg select-none"
@@ -350,7 +350,8 @@
 
       <style x-text="cssKeyframes()"></style>
 
-      <template x-if="settings.backgroundOverlayType === 'image' && settings.backgroundImageUrl">
+      <!-- SHOW IMAGE: Only when useWebsiteTheme is false -->
+      <template x-if="!settings.useWebsiteTheme && settings.backgroundOverlayType === 'image' && settings.backgroundImageUrl">
         <div class="absolute inset-0 pointer-events-none" :style="{
             backgroundImage: \`url(\${settings.backgroundImageUrl})\`,
             backgroundRepeat: 'no-repeat',
@@ -362,6 +363,16 @@
           }"></div>
       </template>
 
+      <!-- SHOW CHAT ICON: Hides when hovering (if dots are enabled) -->
+      <template x-if="settings.useWebsiteTheme && !(settings.dots && hovered)">
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none text-white">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+      </template>
+
+      <!-- SHOW DOTS ON HOVER -->
       <template x-if="settings.dots && hovered">
         <div class="absolute flex z-10" :style="{ gap: \`\${settings.dots.spacing}px\` }">
           <template x-for="i in [0, 1, 2]">
@@ -384,11 +395,17 @@
     return {
       settings: initialSettings,
       hovered: false,
+      // 1. Updated hexToRgba to safely handle non-hex variables just in case
       hexToRgba(hex, alpha) {
         if (!hex) return '';
-        const v = hex.replace('#', '');
-        const bigint = parseInt(v.length === 3 ? v.split('').map(c => c + c).join('') : v, 16);
-        return `rgba(${(bigint >> 16) & 255},${(bigint >> 8) & 255},${bigint & 255},${alpha})`;
+        if (hex.startsWith('#')) {
+          const v = hex.replace('#', '');
+          const bigint = parseInt(v.length === 3 ? v.split('').map(c => c + c).join('') : v, 16);
+          if (!isNaN(bigint)) {
+            return `rgba(${(bigint >> 16) & 255},${(bigint >> 8) & 255},${bigint & 255},${alpha})`;
+          }
+        }
+        return hex; // Fallback if a named color or var() is pulled from CSS
       },
       cssKeyframes() {
         if (!this.settings) return '';
@@ -403,7 +420,12 @@
       },
       getGradient() {
         if (!this.settings || this.settings.gradientType === 'none') return '';
-        const stops = (this.settings.gradientStops || []).map(s => `${s.color} ${s.pos}%`).join(', ');
+
+        const stopsArray = this.settings.gradientStops || [];
+        // Fix: If no stops are defined in the JSON, fallback to the solid background color
+        if (stopsArray.length === 0) return this.settings.backgroundColor || '#0b5fff';
+
+        const stops = stopsArray.map(s => `${s.color} ${s.pos}%`).join(', ');
         return `linear-gradient(${this.settings.gradientAngle || 135}deg, ${stops})`;
       },
       getBoxShadow() {
@@ -440,12 +462,16 @@
 
     if (!Alpine.store('bubble')) {
       Alpine.store('bubble', {
+        useWebsiteTheme: false,
         width: 50, height: 50, borderRadius: { tl: 50, tr: 50, bl: 50, br: 50 },
-        backgroundColor: theme.primary, gradientType: 'none',
+        backgroundColor: '#0b5fff',
+        gradientType: 'none',
+        // Add a default fallback stop just in case
+        gradientStops: [{ color: '#0b5fff', pos: 0 }, { color: '#22D3EE', pos: 100 }],
         backgroundOverlayType: 'image', backgroundImageUrl: 'https://static.vecteezy.com/system/resources/previews/047/656/219/non_2x/abstract-logo-design-for-any-corporate-brand-business-company-vector.jpg',
         backgroundImageSize: 'contain', backgroundImageOpacity: 0.25, backgroundBlendMode: 'normal',
-        border: { width: 0, color: theme.primary, style: 'solid' },
-        outlineRing: { enabled: true, width: 3, color: theme.secondary, opacity: 0.4 },
+        border: { width: 0, color: '#0b5fff', style: 'solid' },
+        outlineRing: { enabled: true, width: 3, color: '#22D3EE', opacity: 0.4 },
         boxShadowBlur: 20, boxShadowSpread: 0, boxShadowOffsetX: 0, boxShadowOffsetY: 8, boxShadowOpacity: 0.25,
         dots: { color: '#F8FAFC', size: 6, spacing: 6, animation: 'bounce' }
       });
@@ -453,10 +479,10 @@
       fetch('public/bubble.json')
         .then(res => res.json())
         .then(data => {
-          // If themeSource is website or parent theme is detected, override with website theme colors
-          if (data.themeSource === 'website' || theme.primary) {
+          // TRUE/FALSE APPROACH: Only override if explicitly set to true
+          if (data.useWebsiteTheme === true) {
             data.backgroundColor = theme.primary;
-            data.gradientType = 'none';
+            data.gradientType = 'none'; // Disable custom gradients if using website theme
             if (data.outlineRing) {
               data.outlineRing.color = theme.secondary;
             }
@@ -468,7 +494,8 @@
 
     if (!Alpine.store('chatcontactv2')) {
       Alpine.store('chatcontactv2', {
-        clientName: 'Zotly Support', agentName: 'Sarah', accentColor: theme.primary,
+        clientName: 'Zotly Support', agentName: 'Sarah',
+        accentColor: '#0b5fff',
         widgetWidth: 350, widgetHeight: 550, expandedWidth: 480, expandedHeight: 550,
         widgetBorderRadius: 16, widgetShadow: true, widgetShadowBlur: 20, widgetShadowColor: 'rgba(0,0,0,0.15)',
         widgetBorderEnabled: true, widgetBorderWidth: 1, widgetBorderColor: '#e5e7eb',
@@ -478,7 +505,8 @@
       fetch('public/chatcontactv2.json')
         .then(res => res.json())
         .then(data => {
-          if (data.themeSource === 'website' || theme.primary) {
+          // TRUE/FALSE APPROACH
+          if (data.useWebsiteTheme === true) {
             data.accentColor = theme.primary;
           }
           Object.assign(Alpine.store('chatcontactv2'), data);

@@ -1,5 +1,5 @@
 {
-  "themeSource": "website",
+  "useWebsiteTheme": true,
   "clientName": "Zotly Support V2",
   "agentName": "Sarah",
   "accentColor": "#0b5fff",
