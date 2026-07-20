@@ -2959,3 +2959,83 @@ button.primary:active {
   box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   Mobile Responsive Adjustments (< 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .zotly-widget-panel-wrapper {
+    width: calc(100vw - 24px) !important;
+    height: calc(100vh - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100vh - 24px) !important;
+    bottom: 12px !important;
+    right: 12px !important;
+  }
+
+  .panel-header {
+    padding: 10px 12px;
+    gap: 6px;
+  }
+
+  .header-brand {
+    gap: 8px;
+  }
+
+  .brand-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .panel-title {
+    font-size: 13.5px;
+  }
+
+  .panel-status {
+    font-size: 11px;
+  }
+
+  .header-actions {
+    gap: 1px;
+  }
+
+  .icon-btn {
+    padding: 4px;
+  }
+
+  .icon-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .composer {
+    gap: 5px;
+    padding: 8px 8px 6px;
+  }
+
+  .attach-btn,
+  .send-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .attach-btn svg,
+  .send-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .composer textarea {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .emoji-row,
+  .attach-pop {
+    bottom: 76px;
+    left: 8px;
+    right: 8px;
+    max-width: none;
+  }
+}

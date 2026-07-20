@@ -25,10 +25,10 @@
     const bodyStyle = getComputedStyle(document.body);
 
     let primary = rootStyle.getPropertyValue('--primary-color').trim() ||
-      bodyStyle.getPropertyValue('--primary-color').trim();
+                  bodyStyle.getPropertyValue('--primary-color').trim();
 
     let secondary = rootStyle.getPropertyValue('--secondary-color').trim() ||
-      bodyStyle.getPropertyValue('--secondary-color').trim();
+                    bodyStyle.getPropertyValue('--secondary-color').trim();
 
     // Fallback: check script attribute if defined
     const scriptTag = document.currentScript || document.querySelector('script[src*="widget.js"]');
@@ -39,13 +39,6 @@
     if (!secondary) secondary = primary;
 
     return { primary, secondary };
-  }
-
-  // Load HTMX if needed
-  if (!window.htmx) {
-    const htmxScript = document.createElement('script');
-    htmxScript.src = 'https://unpkg.com/htmx.org@2.0.0';
-    document.head.appendChild(htmxScript);
   }
 
   // Inject Widget HTML markup into container
@@ -64,12 +57,12 @@
       x-transition:leave="transition ease-in duration-150"
       x-transition:leave-start="opacity-100 translate-y-0 scale-100"
       x-transition:leave-end="opacity-0 translate-y-4 scale-95"
-      class="fixed bottom-6 right-6 z-50 flex flex-col transition-all duration-300 pointer-events-auto"
+      class="fixed bottom-6 right-6 z-50 flex flex-col transition-all duration-300 pointer-events-auto zotly-widget-panel-wrapper"
       :style="{
         width: $store.chat.isExpanded ? ($store.chatcontactv2.expandedWidth ? $store.chatcontactv2.expandedWidth + 'px' : '480px') : ($store.chatcontactv2.widgetWidth ? $store.chatcontactv2.widgetWidth + 'px' : '350px'),
         height: $store.chatcontactv2.widgetHeight ? $store.chatcontactv2.widgetHeight + 'px' : '550px',
-        maxWidth: 'calc(100vw - 48px)',
-        maxHeight: 'calc(100vh - 48px)',
+        maxWidth: 'calc(100vw - 24px)',
+        maxHeight: 'calc(100vh - 24px)',
         position: 'fixed',
         bottom: '24px',
         right: '24px'
@@ -116,7 +109,7 @@
                 <circle cx="5" cy="12" r="1.8" /><circle cx="12" cy="12" r="1.8" /><circle cx="19" cy="12" r="1.8" />
               </svg>
             </button>
-            <button type="button" class="icon-btn" aria-label="Expand chat"
+            <button type="button" class="icon-btn hidden sm:flex" aria-label="Expand chat"
                     x-show="$store.chat.flag('widget.modernUi', true)"
                     @click="$store.chat.toggleExpand()">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
@@ -166,7 +159,7 @@
             </div>
             <h2>Hi there 👋</h2>
             <p class="muted">Tell us who you are and we'll connect you with an agent right away.</p>
-            <form hx-post="/api/widget/conversations" hx-target="#swap-zone-embed" hx-swap="innerHTML" :hx-headers="JSON.stringify({'X-Visitor-Token': $store.chat.token})">
+            <form @submit.prevent="$store.chat.submitPrechat($event.target)">
               <label for="cw-embed-name">Name</label>
               <input id="cw-embed-name" name="name" required maxlength="120" autocomplete="name" placeholder="Your name" />
               <label for="cw-embed-email">Email</label>
@@ -330,7 +323,7 @@
       </div>
     </div>
 
- <!-- Floating Bubble Widget Trigger -->
+    <!-- Floating Bubble Widget Trigger -->
     <div x-show="!openContactWidget" x-data='window.previewBubbleController(Alpine.store("bubble"))'
       @click="$dispatch('toggle-contact-widget')"
       class="fixed bottom-6 right-6 z-40 flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg select-none"
@@ -525,6 +518,27 @@
           { key: 'm1', senderType: 'AGENT', senderName: 'Sarah', body: 'Hi! How can I help you today?', created: new Date(Date.now() - 300000).toISOString() },
           { key: 'm2', senderType: 'VISITOR', body: 'I need help with my order', created: new Date(Date.now() - 240000).toISOString() }
         ],
+        async submitPrechat(formElement) {
+          const formData = new FormData(formElement);
+          const body = new URLSearchParams(formData);
+          try {
+            const response = await fetch('/api/widget/conversations', {
+              method: 'POST',
+              headers: {
+                'X-Visitor-Token': this.token || '',
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: body
+            });
+            const html = await response.text();
+            const target = document.getElementById('swap-zone-embed');
+            if (target) {
+              target.innerHTML = html;
+            }
+          } catch (err) {
+            console.error('Prechat submission error:', err);
+          }
+        },
         flag(key, defaultValue) { return this.flags[key] !== undefined ? this.flags[key] : (defaultValue !== undefined ? defaultValue : true); },
         send() {
           if (this.draft && this.draft.trim()) {

@@ -28,12 +28,12 @@
       x-transition:leave="transition ease-in duration-150"
       x-transition:leave-start="opacity-100 translate-y-0 scale-100"
       x-transition:leave-end="opacity-0 translate-y-4 scale-95"
-      class="fixed bottom-6 right-6 z-50 flex flex-col transition-all duration-300 pointer-events-auto"
+      class="fixed bottom-6 right-6 z-50 flex flex-col transition-all duration-300 pointer-events-auto zotly-widget-panel-wrapper"
       :style="{
         width: $store.chat.isExpanded ? ($store.chatcontactv2.expandedWidth ? $store.chatcontactv2.expandedWidth + 'px' : '480px') : ($store.chatcontactv2.widgetWidth ? $store.chatcontactv2.widgetWidth + 'px' : '350px'),
         height: $store.chatcontactv2.widgetHeight ? $store.chatcontactv2.widgetHeight + 'px' : '550px',
-        maxWidth: 'calc(100vw - 48px)',
-        maxHeight: 'calc(100vh - 48px)',
+        maxWidth: 'calc(100vw - 24px)',
+        maxHeight: 'calc(100vh - 24px)',
         position: 'fixed',
         bottom: '24px',
         right: '24px'
