@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vortex Studio | Amber & Violet Theme</title>
+
+  <!-- Google Fonts: Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+  </style>
+
+  <!-- Single Script Import for Chat Widget (custom accent: Amber Gold #d97706) -->
+  <script src="widget.js" data-accent="#d97706" defer></script>
+</head>
+
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
+
+  <!-- Header -->
+  <header class="border-b border-amber-900/30 bg-zinc-900/60 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-violet-600 flex items-center justify-center font-black text-zinc-950 shadow-lg shadow-amber-500/20">
+          ⚡
+        </div>
+        <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-amber-400 via-violet-400 to-rose-400 bg-clip-text text-transparent">
+          VORTEX.STUDIO
+        </span>
+      </div>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
+        <a href="#" class="hover:text-amber-400 transition-colors">Creations</a>
+        <a href="#" class="hover:text-amber-400 transition-colors">Agency</a>
+        <a href="#" class="hover:text-amber-400 transition-colors">Showcase</a>
+      </nav>
+      <button class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-sm px-5 py-2.5 rounded-xl shadow-md shadow-amber-500/20 transition-all hover:scale-105 active:scale-95">
+        Start Project
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="max-w-6xl mx-auto px-6 py-20 flex-1 flex flex-col justify-center items-center text-center relative">
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-950/40 border border-amber-800/40 text-amber-400 text-xs font-mono uppercase tracking-widest mb-8">
+      <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+      Website 2: Amber Theme & Space Grotesk Font
+    </div>
+
+    <h1 class="text-5xl md:text-7xl font-bold tracking-tight max-w-4xl text-zinc-100 leading-tight">
+      Next-Gen Interactive Digital <span class="bg-gradient-to-r from-amber-400 via-violet-400 to-amber-500 bg-clip-text text-transparent">Experiences</span>
+    </h1>
+
+    <p class="text-zinc-400 text-lg md:text-xl max-w-2xl mt-6 leading-relaxed">
+      Crafting high-impact motion websites, 3D web applications, and real-time customer engagement pipelines.
+    </p>
+
+    <div class="mt-10 flex flex-wrap gap-4 justify-center">
+      <button class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-8 py-4 rounded-xl shadow-lg shadow-amber-500/25 transition-all hover:-translate-y-0.5">
+        Launch Studio
+      </button>
+      <button class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-semibold px-8 py-4 rounded-xl transition-all">
+        View Portfolio
+      </button>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="grid md:grid-cols-3 gap-6 mt-20 text-left w-full">
+      <div class="p-6 rounded-2xl bg-zinc-900/60 border border-amber-900/20 hover:border-amber-500/40 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-amber-950/60 text-amber-400 flex items-center justify-center text-xl mb-4">🎨</div>
+        <h3 class="text-lg font-bold text-zinc-100">Custom Typography</h3>
+        <p class="text-sm text-zinc-400 mt-2">Styled with Space Grotesk for a sleek tech aesthetic.</p>
+      </div>
+
+      <div class="p-6 rounded-2xl bg-zinc-900/60 border border-amber-900/20 hover:border-amber-500/40 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-violet-950/60 text-violet-400 flex items-center justify-center text-xl mb-4">🚀</div>
+        <h3 class="text-lg font-bold text-zinc-100">Ultra-Fast Loading</h3>
+        <p class="text-sm text-zinc-400 mt-2">Zero heavy dependencies, pure lightweight web performance.</p>
+      </div>
+
+      <div class="p-6 rounded-2xl bg-zinc-900/60 border border-amber-900/20 hover:border-amber-500/40 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-amber-950/60 text-amber-400 flex items-center justify-center text-xl mb-4">⚡</div>
+        <h3 class="text-lg font-bold text-zinc-100">Script Embedded Widget</h3>
+        <p class="text-sm text-zinc-400 mt-2">Imported via single script tag `<script src="widget.js" data-accent="#d97706"></script>`.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-zinc-900 bg-zinc-950 py-8 text-center text-xs text-zinc-500">
+    © 2026 Vortex Studio. Built with Space Grotesk Font & Amber Accent Token.
+  </footer>
+
+</body>
+
+</html>

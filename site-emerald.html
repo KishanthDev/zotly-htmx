@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoSphere | Emerald & Teal Theme</title>
+
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+    }
+  </style>
+
+  <!-- Single Script Import for Chat Widget (custom accent: Emerald #059669) -->
+  <script src="widget.js" data-accent="#059669" defer></script>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="border-b border-emerald-900/40 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20">
+          🌿
+        </div>
+        <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+          EcoSphere
+        </span>
+      </div>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
+        <a href="#" class="hover:text-emerald-400 transition-colors">Solutions</a>
+        <a href="#" class="hover:text-emerald-400 transition-colors">Sustainability</a>
+        <a href="#" class="hover:text-emerald-400 transition-colors">Pricing</a>
+      </nav>
+      <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-md shadow-emerald-600/30 transition-all hover:scale-105 active:scale-95">
+        Get Started
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="max-w-6xl mx-auto px-6 py-20 flex-1 flex flex-col justify-center items-center text-center relative">
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-950/60 border border-emerald-800/50 text-emerald-400 text-xs font-semibold tracking-wider uppercase mb-8">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      Website 1: Emerald Theme & Outfit Font
+    </div>
+
+    <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight max-w-4xl text-slate-100 leading-tight">
+      Sustainable Energy Infrastructure for <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 bg-clip-text text-transparent">Tomorrow</span>
+    </h1>
+
+    <p class="text-slate-400 text-lg md:text-xl max-w-2xl mt-6 leading-relaxed">
+      Empowering green enterprises with real-time carbon analytics, renewable energy management, and intelligent automated support.
+    </p>
+
+    <div class="mt-10 flex flex-wrap gap-4 justify-center">
+      <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8 py-4 rounded-xl shadow-lg shadow-emerald-600/30 transition-all hover:-translate-y-0.5">
+        Explore Dashboard
+      </button>
+      <button class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-semibold px-8 py-4 rounded-xl transition-all">
+        Live Demo
+      </button>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="grid md:grid-cols-3 gap-6 mt-20 text-left w-full">
+      <div class="p-6 rounded-2xl bg-slate-900/50 border border-emerald-900/30 hover:border-emerald-700/50 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-emerald-900/40 text-emerald-400 flex items-center justify-center text-xl mb-4">⚡</div>
+        <h3 class="text-lg font-bold text-slate-100">Smart Grid Sync</h3>
+        <p class="text-sm text-slate-400 mt-2">Automated load balancing and real-time solar battery telemetry.</p>
+      </div>
+
+      <div class="p-6 rounded-2xl bg-slate-900/50 border border-emerald-900/30 hover:border-emerald-700/50 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-teal-900/40 text-teal-400 flex items-center justify-center text-xl mb-4">🌱</div>
+        <h3 class="text-lg font-bold text-slate-100">Carbon Credits</h3>
+        <p class="text-sm text-slate-400 mt-2">Verified blockchain offsets with transparent ledger reporting.</p>
+      </div>
+
+      <div class="p-6 rounded-2xl bg-slate-900/50 border border-emerald-900/30 hover:border-emerald-700/50 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-emerald-900/40 text-emerald-400 flex items-center justify-center text-xl mb-4">💬</div>
+        <h3 class="text-lg font-bold text-slate-100">Embedded Chat Support</h3>
+        <p class="text-sm text-slate-400 mt-2">Notice the custom Emerald Chat V2 widget floating at the bottom right!</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 bg-slate-950 py-8 text-center text-xs text-slate-500">
+    © 2026 EcoSphere Inc. Built with Outfit Font & Emerald Accent Token.
+  </footer>
+
+</body>
+
+</html>
