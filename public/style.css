@@ -2785,13 +2785,21 @@ button.primary:active {
   border: 1px solid var(--cw-border);
   background: var(--cw-bg);
   color: var(--cw-ink);
-  border-radius: 22px;
-  padding: 10px 16px;
+  border-radius: 20px;
+  padding: 9px 14px;
   font: inherit;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.35;
+  min-height: 38px;
   max-height: 120px;
+  overflow-y: hidden;
   transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.composer textarea::placeholder {
+  font-size: 12px;
+  opacity: 0.7;
+  color: var(--cw-muted);
 }
 
 .composer textarea:focus {

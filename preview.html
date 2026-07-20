@@ -300,7 +300,7 @@
               <textarea rows="1" maxlength="4000" placeholder="Write a message…"
                         aria-label="Message"
                         x-model="$store.chat.draft"
-                        @input="$store.chat.notifyTyping()"
+                        @input="$store.chat.notifyTyping(); $el.style.height = 'auto'; $el.style.height = Math.min($el.scrollHeight, 120) + 'px'"
                         @keydown.enter.prevent="$store.chat.send()"></textarea>
               <button type="button" class="attach-btn emoji-toggle" aria-label="Emoji"
                       x-show="$store.chat.flag('widget.modernUi', true)"
