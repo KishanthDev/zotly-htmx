@@ -11,43 +11,55 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
   <!-- Define HTML Parent Theme CSS Variables & Font -->
   <style>
     :root {
-      --primary-color: #d97706;   /* Amber Gold 600 */
-      --secondary-color: #8b5cf6; /* Violet 500 */
+      --primary-color: #d97706;   /* Primary Theme Color (Amber Gold) */
+      --secondary-color: #8b5cf6; /* Secondary Theme Color (Violet) */
     }
     body {
       font-family: 'Space Grotesk', sans-serif;
     }
   </style>
 
+  <!-- Tailwind CSS CDN with Dynamic CSS Variables Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: 'var(--primary-color)',
+            secondary: 'var(--secondary-color)'
+          }
+        }
+      }
+    }
+  </script>
+
   <!-- Single Script Import for Chat Widget (automatically consumes --primary-color, --secondary-color & font) -->
   <script src="widget.js" defer></script>
 </head>
 
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-between selection:bg-primary selection:text-zinc-950">
 
   <!-- Header -->
-  <header class="border-b border-amber-900/30 bg-zinc-900/60 backdrop-blur-md sticky top-0 z-30">
+  <header class="border-b border-primary/30 bg-zinc-900/60 backdrop-blur-md sticky top-0 z-30">
     <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-violet-600 flex items-center justify-center font-black text-zinc-950 shadow-lg shadow-amber-500/20">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-black text-zinc-950 shadow-lg shadow-primary/20">
           ⚡
         </div>
-        <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-amber-400 via-violet-400 to-rose-400 bg-clip-text text-transparent">
+        <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           VORTEX.STUDIO
         </span>
       </div>
       <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
-        <a href="#" class="hover:text-amber-400 transition-colors">Creations</a>
-        <a href="#" class="hover:text-amber-400 transition-colors">Agency</a>
-        <a href="#" class="hover:text-amber-400 transition-colors">Showcase</a>
+        <a href="#" class="hover:text-primary transition-colors">Creations</a>
+        <a href="#" class="hover:text-primary transition-colors">Agency</a>
+        <a href="#" class="hover:text-primary transition-colors">Showcase</a>
       </nav>
-      <button class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-sm px-5 py-2.5 rounded-xl shadow-md shadow-amber-500/20 transition-all hover:scale-105 active:scale-95">
+      <button class="bg-primary hover:opacity-90 text-zinc-950 font-bold text-sm px-5 py-2.5 rounded-xl shadow-md shadow-primary/20 transition-all hover:scale-105 active:scale-95">
         Start Project
       </button>
     </div>
@@ -55,13 +67,13 @@
 
   <!-- Hero Section -->
   <main class="max-w-6xl mx-auto px-6 py-20 flex-1 flex flex-col justify-center items-center text-center relative">
-    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-950/40 border border-amber-800/40 text-amber-400 text-xs font-mono uppercase tracking-widest mb-8">
-      <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-      Website 2: Amber Theme & Space Grotesk Font
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-primary/40 text-primary text-xs font-mono uppercase tracking-widest mb-8">
+      <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+      Website 2: Space Grotesk Font & CSS Variables (--primary-color / --secondary-color)
     </div>
 
     <h1 class="text-5xl md:text-7xl font-bold tracking-tight max-w-4xl text-zinc-100 leading-tight">
-      Next-Gen Interactive Digital <span class="bg-gradient-to-r from-amber-400 via-violet-400 to-amber-500 bg-clip-text text-transparent">Experiences</span>
+      Next-Gen Interactive Digital <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Experiences</span>
     </h1>
 
     <p class="text-zinc-400 text-lg md:text-xl max-w-2xl mt-6 leading-relaxed">
@@ -69,7 +81,7 @@
     </p>
 
     <div class="mt-10 flex flex-wrap gap-4 justify-center">
-      <button class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-8 py-4 rounded-xl shadow-lg shadow-amber-500/25 transition-all hover:-translate-y-0.5">
+      <button class="bg-primary hover:opacity-90 text-zinc-950 font-bold px-8 py-4 rounded-xl shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5">
         Launch Studio
       </button>
       <button class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-semibold px-8 py-4 rounded-xl transition-all">
@@ -79,20 +91,20 @@
 
     <!-- Features Grid -->
     <div class="grid md:grid-cols-3 gap-6 mt-20 text-left w-full">
-      <div class="p-6 rounded-2xl bg-zinc-900/60 border border-amber-900/20 hover:border-amber-500/40 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-amber-950/60 text-amber-400 flex items-center justify-center text-xl mb-4">🎨</div>
+      <div class="p-6 rounded-2xl bg-zinc-900/60 border border-primary/20 hover:border-primary/40 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-zinc-800 text-primary flex items-center justify-center text-xl mb-4">🎨</div>
         <h3 class="text-lg font-bold text-zinc-100">Space Grotesk Font</h3>
         <p class="text-sm text-zinc-400 mt-2">The widget automatically inherits 'Space Grotesk' from the HTML parent body.</p>
       </div>
 
-      <div class="p-6 rounded-2xl bg-zinc-900/60 border border-amber-900/20 hover:border-amber-500/40 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-violet-950/60 text-violet-400 flex items-center justify-center text-xl mb-4">⚡</div>
-        <h3 class="text-lg font-bold text-zinc-100">--primary-color: #d97706</h3>
-        <p class="text-sm text-zinc-400 mt-2">The bubble gradient and Chat V2 retinting automatically adapt to Amber & Violet.</p>
+      <div class="p-6 rounded-2xl bg-zinc-900/60 border border-primary/20 hover:border-primary/40 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-zinc-800 text-secondary flex items-center justify-center text-xl mb-4">⚡</div>
+        <h3 class="text-lg font-bold text-zinc-100">--primary-color & --secondary-color</h3>
+        <p class="text-sm text-zinc-400 mt-2">HTML layout and Chat V2 widget consume CSS variables directly.</p>
       </div>
 
-      <div class="p-6 rounded-2xl bg-zinc-900/60 border border-amber-900/20 hover:border-amber-500/40 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-amber-950/60 text-amber-400 flex items-center justify-center text-xl mb-4">💬</div>
+      <div class="p-6 rounded-2xl bg-zinc-900/60 border border-primary/20 hover:border-primary/40 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-zinc-800 text-primary flex items-center justify-center text-xl mb-4">💬</div>
         <h3 class="text-lg font-bold text-zinc-100">Automatic Theme Consumption</h3>
         <p class="text-sm text-zinc-400 mt-2">Simply place `<script src="widget.js" defer></script>` on any site!</p>
       </div>
@@ -101,7 +113,7 @@
 
   <!-- Footer -->
   <footer class="border-t border-zinc-900 bg-zinc-950 py-8 text-center text-xs text-zinc-500">
-    © 2026 Vortex Studio. Built with Space Grotesk Font & Amber Theme Variables.
+    © 2026 Vortex Studio. Driven 100% by --primary-color and --secondary-color CSS variables.
   </footer>
 
 </body>

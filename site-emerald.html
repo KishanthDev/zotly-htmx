@@ -11,43 +11,55 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
   <!-- Define HTML Parent Theme CSS Variables & Font -->
   <style>
     :root {
-      --primary-color: #059669;   /* Emerald 600 */
-      --secondary-color: #0d9488; /* Teal 600 */
+      --primary-color: #059669;   /* Primary Theme Color (Emerald) */
+      --secondary-color: #0d9488; /* Secondary Theme Color (Teal) */
     }
     body {
       font-family: 'Outfit', sans-serif;
     }
   </style>
 
+  <!-- Tailwind CSS CDN with Dynamic CSS Variables Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: 'var(--primary-color)',
+            secondary: 'var(--secondary-color)'
+          }
+        }
+      }
+    }
+  </script>
+
   <!-- Single Script Import for Chat Widget (automatically consumes --primary-color, --secondary-color & font) -->
   <script src="widget.js" defer></script>
 </head>
 
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-primary selection:text-white">
 
   <!-- Header -->
-  <header class="border-b border-emerald-900/40 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
+  <header class="border-b border-primary/30 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
     <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center font-bold text-white shadow-lg shadow-primary/20">
           🌿
         </div>
-        <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+        <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           EcoSphere
         </span>
       </div>
       <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
-        <a href="#" class="hover:text-emerald-400 transition-colors">Solutions</a>
-        <a href="#" class="hover:text-emerald-400 transition-colors">Sustainability</a>
-        <a href="#" class="hover:text-emerald-400 transition-colors">Pricing</a>
+        <a href="#" class="hover:text-primary transition-colors">Solutions</a>
+        <a href="#" class="hover:text-primary transition-colors">Sustainability</a>
+        <a href="#" class="hover:text-primary transition-colors">Pricing</a>
       </nav>
-      <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-md shadow-emerald-600/30 transition-all hover:scale-105 active:scale-95">
+      <button class="bg-primary hover:opacity-90 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-md shadow-primary/30 transition-all hover:scale-105 active:scale-95">
         Get Started
       </button>
     </div>
@@ -55,13 +67,13 @@
 
   <!-- Hero Section -->
   <main class="max-w-6xl mx-auto px-6 py-20 flex-1 flex flex-col justify-center items-center text-center relative">
-    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-950/60 border border-emerald-800/50 text-emerald-400 text-xs font-semibold tracking-wider uppercase mb-8">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      Website 1: Emerald Theme & Outfit Font
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-primary/40 text-primary text-xs font-semibold tracking-wider uppercase mb-8">
+      <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+      Website 1: Outfit Font & CSS Variables (--primary-color / --secondary-color)
     </div>
 
     <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight max-w-4xl text-slate-100 leading-tight">
-      Sustainable Energy Infrastructure for <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 bg-clip-text text-transparent">Tomorrow</span>
+      Sustainable Energy Infrastructure for <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Tomorrow</span>
     </h1>
 
     <p class="text-slate-400 text-lg md:text-xl max-w-2xl mt-6 leading-relaxed">
@@ -69,7 +81,7 @@
     </p>
 
     <div class="mt-10 flex flex-wrap gap-4 justify-center">
-      <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8 py-4 rounded-xl shadow-lg shadow-emerald-600/30 transition-all hover:-translate-y-0.5">
+      <button class="bg-primary hover:opacity-90 text-white font-bold px-8 py-4 rounded-xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5">
         Explore Dashboard
       </button>
       <button class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-semibold px-8 py-4 rounded-xl transition-all">
@@ -79,20 +91,20 @@
 
     <!-- Features Grid -->
     <div class="grid md:grid-cols-3 gap-6 mt-20 text-left w-full">
-      <div class="p-6 rounded-2xl bg-slate-900/50 border border-emerald-900/30 hover:border-emerald-700/50 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-emerald-900/40 text-emerald-400 flex items-center justify-center text-xl mb-4">🌿</div>
+      <div class="p-6 rounded-2xl bg-slate-900/50 border border-primary/20 hover:border-primary/50 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-slate-800 text-primary flex items-center justify-center text-xl mb-4">🌿</div>
         <h3 class="text-lg font-bold text-slate-100">Outfit Google Font</h3>
         <p class="text-sm text-slate-400 mt-2">The chat widget automatically consumes 'Outfit' from the HTML body.</p>
       </div>
 
-      <div class="p-6 rounded-2xl bg-slate-900/50 border border-emerald-900/30 hover:border-emerald-700/50 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-teal-900/40 text-teal-400 flex items-center justify-center text-xl mb-4">🎨</div>
-        <h3 class="text-lg font-bold text-slate-100">--primary-color: #059669</h3>
-        <p class="text-sm text-slate-400 mt-2">Bubble and Chat V2 accent colors dynamically adopt the parent CSS variable.</p>
+      <div class="p-6 rounded-2xl bg-slate-900/50 border border-primary/20 hover:border-primary/50 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-slate-800 text-secondary flex items-center justify-center text-xl mb-4">🎨</div>
+        <h3 class="text-lg font-bold text-slate-100">--primary-color & --secondary-color</h3>
+        <p class="text-sm text-slate-400 mt-2">HTML layout and Chat V2 widget consume CSS variables directly.</p>
       </div>
 
-      <div class="p-6 rounded-2xl bg-slate-900/50 border border-emerald-900/30 hover:border-emerald-700/50 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-emerald-900/40 text-emerald-400 flex items-center justify-center text-xl mb-4">💬</div>
+      <div class="p-6 rounded-2xl bg-slate-900/50 border border-primary/20 hover:border-primary/50 transition-all">
+        <div class="w-12 h-12 rounded-xl bg-slate-800 text-primary flex items-center justify-center text-xl mb-4">💬</div>
         <h3 class="text-lg font-bold text-slate-100">Zero Hardcoded CSS</h3>
         <p class="text-sm text-slate-400 mt-2">The widget matches the host site's branding out-of-the-box.</p>
       </div>
@@ -101,7 +113,7 @@
 
   <!-- Footer -->
   <footer class="border-t border-slate-900 bg-slate-950 py-8 text-center text-xs text-slate-500">
-    © 2026 EcoSphere Inc. Built with Outfit Font & Emerald Theme Variables.
+    © 2026 EcoSphere Inc. Driven 100% by --primary-color and --secondary-color CSS variables.
   </footer>
 
 </body>
