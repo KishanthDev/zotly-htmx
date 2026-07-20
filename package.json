@@ -1,25 +1,19 @@
 {
   "name": "zotly-htmx-alpine-demo",
   "version": "1.0.0",
-  "description": "A demo dashboard showcasing HTMX + Alpine.js + Tailwind CSS v4",
+  "description": "A demo dashboard showcasing HTMX + Alpine.js",
   "main": "index.html",
   "scripts": {
     "start": "npx -y http-server .",
-    "dev": "npx -y http-server .",
-    "build:css": "tailwindcss -i src/input.css -o public/style.css --minify",
-    "watch:css": "tailwindcss -i src/input.css -o public/style.css --watch"
+    "dev": "npx -y http-server ."
   },
   "keywords": [
     "htmx",
     "alpinejs",
-    "tailwind",
+    "vanillacss",
     "express",
     "demo"
   ],
   "author": "Antigravity",
-  "license": "MIT",
-  "devDependencies": {
-    "@tailwindcss/cli": "^4.3.3",
-    "tailwindcss": "^4.3.3"
-  }
+  "license": "MIT"
 }

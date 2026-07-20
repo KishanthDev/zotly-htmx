@@ -1,0 +1,19 @@
+{
+  "clientName": "Zotly Support V2",
+  "agentName": "Sarah",
+  "accentColor": "#0b5fff",
+  "widgetWidth": 350,
+  "widgetHeight": 550,
+  "expandedWidth": 480,
+  "expandedHeight": 580,
+  "widgetBorderRadius": 16,
+  "widgetShadow": true,
+  "widgetShadowBlur": 20,
+  "widgetShadowColor": "rgba(0,0,0,0.15)",
+  "widgetBorderEnabled": true,
+  "widgetBorderWidth": 1,
+  "widgetBorderColor": "#e5e7eb",
+  "modernUi": true,
+  "typingIndicator": true,
+  "attachmentsEnabled": true
+}
