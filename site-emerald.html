@@ -14,14 +14,19 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Define HTML Parent Theme CSS Variables & Font -->
   <style>
+    :root {
+      --primary-color: #059669;   /* Emerald 600 */
+      --secondary-color: #0d9488; /* Teal 600 */
+    }
     body {
       font-family: 'Outfit', sans-serif;
     }
   </style>
 
-  <!-- Single Script Import for Chat Widget (custom accent: Emerald #059669) -->
-  <script src="widget.js" data-accent="#059669" defer></script>
+  <!-- Single Script Import for Chat Widget (automatically consumes --primary-color, --secondary-color & font) -->
+  <script src="widget.js" defer></script>
 </head>
 
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
@@ -75,28 +80,28 @@
     <!-- Features Grid -->
     <div class="grid md:grid-cols-3 gap-6 mt-20 text-left w-full">
       <div class="p-6 rounded-2xl bg-slate-900/50 border border-emerald-900/30 hover:border-emerald-700/50 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-emerald-900/40 text-emerald-400 flex items-center justify-center text-xl mb-4">⚡</div>
-        <h3 class="text-lg font-bold text-slate-100">Smart Grid Sync</h3>
-        <p class="text-sm text-slate-400 mt-2">Automated load balancing and real-time solar battery telemetry.</p>
+        <div class="w-12 h-12 rounded-xl bg-emerald-900/40 text-emerald-400 flex items-center justify-center text-xl mb-4">🌿</div>
+        <h3 class="text-lg font-bold text-slate-100">Outfit Google Font</h3>
+        <p class="text-sm text-slate-400 mt-2">The chat widget automatically consumes 'Outfit' from the HTML body.</p>
       </div>
 
       <div class="p-6 rounded-2xl bg-slate-900/50 border border-emerald-900/30 hover:border-emerald-700/50 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-teal-900/40 text-teal-400 flex items-center justify-center text-xl mb-4">🌱</div>
-        <h3 class="text-lg font-bold text-slate-100">Carbon Credits</h3>
-        <p class="text-sm text-slate-400 mt-2">Verified blockchain offsets with transparent ledger reporting.</p>
+        <div class="w-12 h-12 rounded-xl bg-teal-900/40 text-teal-400 flex items-center justify-center text-xl mb-4">🎨</div>
+        <h3 class="text-lg font-bold text-slate-100">--primary-color: #059669</h3>
+        <p class="text-sm text-slate-400 mt-2">Bubble and Chat V2 accent colors dynamically adopt the parent CSS variable.</p>
       </div>
 
       <div class="p-6 rounded-2xl bg-slate-900/50 border border-emerald-900/30 hover:border-emerald-700/50 transition-all">
         <div class="w-12 h-12 rounded-xl bg-emerald-900/40 text-emerald-400 flex items-center justify-center text-xl mb-4">💬</div>
-        <h3 class="text-lg font-bold text-slate-100">Embedded Chat Support</h3>
-        <p class="text-sm text-slate-400 mt-2">Notice the custom Emerald Chat V2 widget floating at the bottom right!</p>
+        <h3 class="text-lg font-bold text-slate-100">Zero Hardcoded CSS</h3>
+        <p class="text-sm text-slate-400 mt-2">The widget matches the host site's branding out-of-the-box.</p>
       </div>
     </div>
   </main>
 
   <!-- Footer -->
   <footer class="border-t border-slate-900 bg-slate-950 py-8 text-center text-xs text-slate-500">
-    © 2026 EcoSphere Inc. Built with Outfit Font & Emerald Accent Token.
+    © 2026 EcoSphere Inc. Built with Outfit Font & Emerald Theme Variables.
   </footer>
 
 </body>

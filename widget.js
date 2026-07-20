@@ -7,6 +7,40 @@
     document.head.appendChild(link);
   }
 
+  // Inject font inheritance style rule so widget inherits parent font-family
+  if (!document.getElementById('zotly-font-inherit-style')) {
+    const styleRule = document.createElement('style');
+    styleRule.id = 'zotly-font-inherit-style';
+    styleRule.textContent = `
+      #zotly-widget-embed, #zotly-widget-embed *, .panel, .panel * {
+        font-family: inherit !important;
+      }
+    `;
+    document.head.appendChild(styleRule);
+  }
+
+  // Helper to extract primary/secondary colors from parent HTML CSS variables
+  function getParentTheme() {
+    const rootStyle = getComputedStyle(document.documentElement);
+    const bodyStyle = getComputedStyle(document.body);
+
+    let primary = rootStyle.getPropertyValue('--primary-color').trim() ||
+                  bodyStyle.getPropertyValue('--primary-color').trim();
+
+    let secondary = rootStyle.getPropertyValue('--secondary-color').trim() ||
+                    bodyStyle.getPropertyValue('--secondary-color').trim();
+
+    // Fallback: check script attribute if defined
+    const scriptTag = document.currentScript || document.querySelector('script[src*="widget.js"]');
+    const dataAccent = scriptTag ? scriptTag.getAttribute('data-accent') : null;
+
+    if (!primary && dataAccent) primary = dataAccent;
+    if (!primary) primary = '#0b5fff';
+    if (!secondary) secondary = primary;
+
+    return { primary, secondary };
+  }
+
   // Load HTMX if needed
   if (!window.htmx) {
     const htmxScript = document.createElement('script');
@@ -382,10 +416,10 @@
         return `inset 0 6px ${this.settings.innerShadow.blur}px rgba(0,0,0,${this.settings.innerShadow.opacity})`;
       },
       getCompositeBackground() {
-        if (!this.settings) return '#1E40AF';
+        if (!this.settings) return '#0b5fff';
         return (this.settings.gradientType && this.settings.gradientType !== 'none')
           ? this.getGradient()
-          : (this.settings.backgroundColor || '#1E40AF');
+          : (this.settings.backgroundColor || '#0b5fff');
       },
       getBorderStyle() {
         if (!this.settings) return {};
@@ -402,32 +436,39 @@
   };
 
   const initStores = () => {
-    // Read custom script configuration if specified
-    const scriptTag = document.currentScript || document.querySelector('script[src*="widget.js"]');
-    const customAccent = scriptTag ? scriptTag.getAttribute('data-accent') : null;
+    const theme = getParentTheme();
 
     if (!Alpine.store('bubble')) {
       Alpine.store('bubble', {
         width: 50, height: 50, borderRadius: { tl: 50, tr: 50, bl: 50, br: 50 },
-        backgroundColor: '#1E40AF', gradientType: 'linear', gradientAngle: 135,
-        gradientStops: [{ color: '#1E40AF', pos: 0 }, { color: '#9333EA', pos: 100 }],
+        backgroundColor: theme.primary, gradientType: 'none',
         backgroundOverlayType: 'image', backgroundImageUrl: 'https://static.vecteezy.com/system/resources/previews/047/656/219/non_2x/abstract-logo-design-for-any-corporate-brand-business-company-vector.jpg',
         backgroundImageSize: 'contain', backgroundImageOpacity: 0.25, backgroundBlendMode: 'normal',
-        border: { width: 0, color: '#3B82F6', style: 'solid' },
-        outlineRing: { enabled: true, width: 3, color: '#22D3EE', opacity: 0.4 },
+        border: { width: 0, color: theme.primary, style: 'solid' },
+        outlineRing: { enabled: true, width: 3, color: theme.secondary, opacity: 0.4 },
         boxShadowBlur: 20, boxShadowSpread: 0, boxShadowOffsetX: 0, boxShadowOffsetY: 8, boxShadowOpacity: 0.25,
         dots: { color: '#F8FAFC', size: 6, spacing: 6, animation: 'bounce' }
       });
 
       fetch('public/bubble.json')
         .then(res => res.json())
-        .then(data => { Object.assign(Alpine.store('bubble'), data); })
+        .then(data => {
+          // If themeSource is website or parent theme is detected, override with website theme colors
+          if (data.themeSource === 'website' || theme.primary) {
+            data.backgroundColor = theme.primary;
+            data.gradientType = 'none';
+            if (data.outlineRing) {
+              data.outlineRing.color = theme.secondary;
+            }
+          }
+          Object.assign(Alpine.store('bubble'), data);
+        })
         .catch(() => { });
     }
 
     if (!Alpine.store('chatcontactv2')) {
       Alpine.store('chatcontactv2', {
-        clientName: 'Zotly Support', agentName: 'Sarah', accentColor: customAccent || '#0b5fff',
+        clientName: 'Zotly Support', agentName: 'Sarah', accentColor: theme.primary,
         widgetWidth: 350, widgetHeight: 550, expandedWidth: 480, expandedHeight: 550,
         widgetBorderRadius: 16, widgetShadow: true, widgetShadowBlur: 20, widgetShadowColor: 'rgba(0,0,0,0.15)',
         widgetBorderEnabled: true, widgetBorderWidth: 1, widgetBorderColor: '#e5e7eb',
@@ -437,7 +478,9 @@
       fetch('public/chatcontactv2.json')
         .then(res => res.json())
         .then(data => {
-          if (customAccent) data.accentColor = customAccent;
+          if (data.themeSource === 'website' || theme.primary) {
+            data.accentColor = theme.primary;
+          }
           Object.assign(Alpine.store('chatcontactv2'), data);
         })
         .catch(() => { });

@@ -2026,6 +2026,10 @@ html.dark {
   border-radius: inherit;
   overflow: hidden;
   box-sizing: border-box;
+  --cw-accent-deep: color-mix(in srgb, var(--cw-accent) 74%, #101828);
+  --cw-accent-soft: color-mix(in srgb, var(--cw-accent) 8%, #ffffff);
+  --cw-accent-tint: color-mix(in srgb, var(--cw-accent) 14%, #ffffff);
+  --cw-grad: linear-gradient(135deg, var(--cw-accent), var(--cw-accent-deep));
 }
 
 .panel-header {
